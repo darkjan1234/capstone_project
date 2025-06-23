@@ -1,0 +1,16 @@
+﻿@page "/"
+@using Business.Solutions.Core.Dependency
+@inherits SolutionsMainLayoutPageComponentBase
+
+<div class="card">
+    <div class="card-body">
+        INDEX
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        DependencyResolver.Resolve<INavigationService>().NavigateTo(NavigationUrlConsts.Tenants);
+    }
+}

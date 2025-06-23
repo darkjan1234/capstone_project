@@ -1,0 +1,49 @@
+﻿<div bsModal #createOrEditModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="createOrEditModal" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form *ngIf="active" #logForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span *ngIf="log.id">{{l("EditLog")}}</span>
+                        <span *ngIf="!log.id">{{l("CreateNewLog")}}</span>
+                    </h4>                    
+                    
+                    
+                 <button type="button" class="btn-close" (click)="close()" aria-label="Close" [disabled]="saving"></button>
+             
+                </div>
+                <div class="modal-body">
+                 
+
+
+
+
+								<div class="my5">
+									<label class="form-label" for="Log_UserId">{{l("UserId")}}</label>
+									<input type="number" #Log_UserId="ngModel" id="Log_UserId" class="form-control" [(ngModel)]="log.userId" name="UserId"    />
+									<validation-messages [formCtrl]="Log_UserId"></validation-messages>
+								</div>
+					
+								<div class="my-3">
+									<label class="form-label" for="Log_Activity">{{l("Activity")}}</label>
+									<input type="text" #Log_Activity="ngModel" id="Log_Activity" class="form-control" [(ngModel)]="log.activity" name="Activity"    />
+								    <validation-messages [formCtrl]="Log_Activity"></validation-messages>
+								</div>
+					
+								<div class="my-3">
+									<label class="form-label" for="Log_LogLevel">{{l("LogLevel")}}</label>
+									<input type="text" #Log_LogLevel="ngModel" id="Log_LogLevel" class="form-control" [(ngModel)]="log.logLevel" name="LogLevel"    />
+								    <validation-messages [formCtrl]="Log_LogLevel"></validation-messages>
+								</div>
+					
+
+                </div>
+                <div class="modal-footer">
+                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">{{l("Cancel")}}</button>
+                    <button type="submit" class="btn btn-primary blue" [disabled]="!logForm.form.valid" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

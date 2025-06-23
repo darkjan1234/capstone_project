@@ -1,0 +1,174 @@
+﻿<div [@routerTransition]>
+  
+  
+   <sub-header [title]="'GroupMembers' | localize" [description]="'GroupMembersHeaderInfo' | localize">
+             <div role="actions">
+                 <button (click)="exportToExcel()" class="btn btn-outline btn-outline-success btn-active-light-success me-1"><i class="fa fa-file-excel"></i> {{l("ExportToExcel")}}</button>
+                
+                 <button id="btn_create_groupMember" *ngIf="isGranted('Pages.GroupMembers.Create')" (click)="createGroupMember()" 
+                                        class="btn btn-primary blue"><i class="fa fa-plus"></i> {{l("CreateNewGroupMember")}}</button>
+             </div>
+            </sub-header>
+    
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <form class="form" autocomplete="off">
+                    <div>
+                        <div class="row align-items-center">
+                            <div class="col-xl-12">
+                                
+                                
+        	<div class="my-3">                
+                <div class="input-group mb-3">
+                  <input [(ngModel)]="filterText" (ngModelChange)="getGroupMembers()" name="filterText" autoFocus type="text" class="form-control" [placeholder]="l('SearchWithThreeDot')">
+                  <button class="btn btn-primary" type="submit" (click)="getGroupMembers()"><i class="flaticon-search-1"></i></button>
+                </div>
+            </div>
+        	
+                            </div>
+                        </div>
+						 <div class="row" [hidden]="!advancedFiltersAreShown">
+						 	<div class="col-md-12">
+						         
+						     </div>
+
+
+
+                            <div class="col-md-3">
+                                <div class="my-3">
+									<label class="form-label" for="MinGroupIdFilter">{{l("MinMax")}} {{l("GroupId")}}</label>
+									<div class="input-group">
+                                        <input type="number" class="form-control" id="MinGroupIdFilter" [(ngModel)]="minGroupIdFilter" placeholder="{{l('MinValue')}}" name="minGroupIdFilter" (ngModelChange)="getGroupMembers()"/>
+                                        <input type="number" class="form-control" [(ngModel)]="maxGroupIdFilter" placeholder="{{l('MaxValue')}}" name="maxGroupIdFilter" (ngModelChange)="getGroupMembers()"/>
+									</div>
+                                </div>
+                            </div>
+							<div class="col-md-3">
+								<div class="my-3">
+									<label class="form-label" for="PttUserIdFilter">{{l("PttUserId")}}</label>
+									<input type="text" class="form-control" id="PttUserIdFilter" name="pttUserIdFilter" [(ngModel)]="pttUserIdFilter" (ngModelChange)="getGroupMembers()">
+								</div>
+                            </div>
+							<div class="col-md-3">
+								<div class="my-3">
+									<label class="form-label" for="RoleInGroupFilter">{{l("RoleInGroup")}}</label>
+									<input type="text" class="form-control" id="RoleInGroupFilter" name="roleInGroupFilter" [(ngModel)]="roleInGroupFilter" (ngModelChange)="getGroupMembers()">
+								</div>
+                            </div>
+
+
+                            <div class="col-md-12 mt-5">
+                                <button (click)="resetFilters()" class="btn btn-secondary btn-sm" id="btn-reset-filters">Reset</button>
+                            </div>
+                        </div>
+                        <div class="row my-4">
+                            <div class="col-sm-12">
+                                <span class="clickable-item text-muted" *ngIf="!advancedFiltersAreShown" (click)="advancedFiltersAreShown=!advancedFiltersAreShown"><i class="fa fa-angle-down"></i> {{l("ShowAdvancedFilters")}}</span>
+                                <span class="clickable-item text-muted" *ngIf="advancedFiltersAreShown" (click)="advancedFiltersAreShown=!advancedFiltersAreShown"><i class="fa fa-angle-up"></i> {{l("HideAdvancedFilters")}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="row align-items-center">
+                    <!--<Primeng-Datatable-Start>-->
+                    <div class="primeng-datatable-container col-12"
+                         [busyIf]="primengTableHelper.isLoading">
+                        <p-table #dataTable
+                                     (onLazyLoad)="getGroupMembers($event)"
+                                     [value]="primengTableHelper.records"
+                                     rows="{{primengTableHelper.defaultRecordsCountPerPage}}"
+                                     [paginator]="false"
+                                     [lazy]="true"
+                                     [scrollable]="true"
+                                     ScrollWidth="100%"
+                                     [tableStyle]="{'min-width': '50rem'}"
+                                     [resizableColumns]="primengTableHelper.resizableColumns">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width: 130px" [hidden]="!isGrantedAny('Pages.GroupMembers.Edit', 'Pages.GroupMembers.Delete')">{{l('Actions')}}</th>
+                                    <th style="width: 150px" pSortableColumn="groupId">
+                                        {{l('GroupId')}}
+                                        <p-sortIcon field="groupMember.groupId"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="pttUserId">
+                                        {{l('PttUserId')}}
+                                        <p-sortIcon field="groupMember.pttUserId"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="roleInGroup">
+                                        {{l('RoleInGroup')}}
+                                        <p-sortIcon field="groupMember.roleInGroup"></p-sortIcon>
+                                    </th>
+
+                                </tr>
+                            </ng-template>                           
+							<ng-template pTemplate="body" let-record="$implicit" let-i="rowIndex">
+                                <tr>
+                                    <td style="width: 130px"
+                                        [hidden]="!isGrantedAny('Pages.GroupMembers.Edit', 'Pages.GroupMembers.Delete')">
+                                       <div class="btn-group dropdown" dropdown container="body">
+                                            <button class="dropdown-toggle btn btn-sm btn-primary" dropdownToggle>
+                                                <i class="fa fa-cog"></i><span class="caret"></span> {{l("Actions")}}
+                                            </button>
+												<ul class="dropdown-menu"  *dropdownMenu>
+												<li>
+													<a href="javascript:;" class="dropdown-item"
+														(click)="viewGroupMemberModal.show(record)">{{l('View')}}</a>
+												</li>
+												<li>
+                                                <a href="javascript:;" *ngIf="permission.isGranted('Pages.GroupMembers.Edit')" class="dropdown-item"
+														(click)="createOrEditGroupMemberModal.show(record.groupMember.id)">{{l('Edit')}}</a>												
+                                                </li>
+												<li>
+											        <a class="dropdown-item" href="javascript:;" *ngIf="permission.isGranted('Pages.GroupMembers.Delete')"
+														(click)="deleteGroupMember(record.groupMember)">{{l('Delete')}}</a>
+												</li>
+                                                <li>
+                                                    <a href="javascript:;" *ngIf="entityHistoryEnabled" class="dropdown-item" 
+                                                       (click)="showHistory(record.groupMember)">{{l('History')}}</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                    <td style="width:150px">
+											<span class="p-column-title"> {{l('GroupId')}}</span>
+											{{record.groupMember.groupId}}
+										</td>
+                                    <td style="width:150px">
+											<span class="p-column-title"> {{l('PttUserId')}}</span>
+											{{record.groupMember.pttUserId}}
+										</td>
+                                    <td style="width:150px">
+											<span class="p-column-title"> {{l('RoleInGroup')}}</span>
+											{{record.groupMember.roleInGroup}}
+										</td>
+
+                                </tr>
+                               
+                            </ng-template>
+                        </p-table>
+						<div class="primeng-no-data" *ngIf="primengTableHelper.totalRecordsCount == 0">
+                            {{l('NoData')}}
+                        </div>
+                        <div class="primeng-paging-container">
+                            <p-paginator [rows]="primengTableHelper.defaultRecordsCountPerPage"
+                                         #paginator
+                                         (onPageChange)="getGroupMembers($event)"
+                                         [totalRecords]="primengTableHelper.totalRecordsCount"
+                                         [rowsPerPageOptions]="primengTableHelper.predefinedRecordsCountPerPage"
+                                         [showCurrentPageReport]="true"
+                                         [currentPageReportTemplate]="'TotalRecordsCount' | localize:primengTableHelper.totalRecordsCount"    
+                            >
+                            </p-paginator>
+                        </div>
+                    </div>
+                    <!--<Primeng-Datatable-End>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <createOrEditGroupMemberModal #createOrEditGroupMemberModal (modalSave)="getGroupMembers()"></createOrEditGroupMemberModal>    
+    <viewGroupMemberModal #viewGroupMemberModal></viewGroupMemberModal>
+     <entityTypeHistoryModal #entityTypeHistoryModal></entityTypeHistoryModal>
+  </div>

@@ -1,0 +1,49 @@
+﻿<div bsModal #createOrEditModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="createOrEditModal" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form *ngIf="active" #groupMemberForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span *ngIf="groupMember.id">{{l("EditGroupMember")}}</span>
+                        <span *ngIf="!groupMember.id">{{l("CreateNewGroupMember")}}</span>
+                    </h4>                    
+                    
+                    
+                 <button type="button" class="btn-close" (click)="close()" aria-label="Close" [disabled]="saving"></button>
+             
+                </div>
+                <div class="modal-body">
+                 
+
+
+
+
+								<div class="my5">
+									<label class="form-label" for="GroupMember_GroupId">{{l("GroupId")}}</label>
+									<input type="number" #GroupMember_GroupId="ngModel" id="GroupMember_GroupId" class="form-control" [(ngModel)]="groupMember.groupId" name="GroupId"    />
+									<validation-messages [formCtrl]="GroupMember_GroupId"></validation-messages>
+								</div>
+					
+								<div class="my-3">
+									<label class="form-label" for="GroupMember_PttUserId">{{l("PttUserId")}}</label>
+									<input type="text" #GroupMember_PttUserId="ngModel" id="GroupMember_PttUserId" class="form-control" [(ngModel)]="groupMember.pttUserId" name="PttUserId"    />
+								    <validation-messages [formCtrl]="GroupMember_PttUserId"></validation-messages>
+								</div>
+					
+								<div class="my-3">
+									<label class="form-label" for="GroupMember_RoleInGroup">{{l("RoleInGroup")}} *</label>
+									<input type="text" #GroupMember_RoleInGroup="ngModel" id="GroupMember_RoleInGroup" class="form-control" [(ngModel)]="groupMember.roleInGroup" name="RoleInGroup"     required/>
+								    <validation-messages [formCtrl]="GroupMember_RoleInGroup"></validation-messages>
+								</div>
+					
+
+                </div>
+                <div class="modal-footer">
+                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">{{l("Cancel")}}</button>
+                    <button type="submit" class="btn btn-primary blue" [disabled]="!groupMemberForm.form.valid" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

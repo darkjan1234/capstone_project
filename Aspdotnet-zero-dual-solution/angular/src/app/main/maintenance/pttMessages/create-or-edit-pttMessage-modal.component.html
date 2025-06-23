@@ -1,0 +1,61 @@
+﻿<div bsModal #createOrEditModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="createOrEditModal" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form *ngIf="active" #pttMessageForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span *ngIf="pttMessage.id">{{l("EditPTTMessage")}}</span>
+                        <span *ngIf="!pttMessage.id">{{l("CreateNewPTTMessage")}}</span>
+                    </h4>                    
+                    
+                    
+                 <button type="button" class="btn-close" (click)="close()" aria-label="Close" [disabled]="saving"></button>
+             
+                </div>
+                <div class="modal-body">
+                 
+
+
+
+
+								<div class="my5">
+									<label class="form-label" for="PTTMessage_SenderId">{{l("SenderId")}}</label>
+									<input type="number" #PTTMessage_SenderId="ngModel" id="PTTMessage_SenderId" class="form-control" [(ngModel)]="pttMessage.senderId" name="SenderId"    />
+									<validation-messages [formCtrl]="PTTMessage_SenderId"></validation-messages>
+								</div>
+					
+								<div class="my5">
+									<label class="form-label" for="PTTMessage_ReceiverId">{{l("ReceiverId")}}</label>
+									<input type="number" #PTTMessage_ReceiverId="ngModel" id="PTTMessage_ReceiverId" class="form-control" [(ngModel)]="pttMessage.receiverId" name="ReceiverId"    />
+									<validation-messages [formCtrl]="PTTMessage_ReceiverId"></validation-messages>
+								</div>
+					
+								<div class="my5">
+									<label class="form-label" for="PTTMessage_GroupId">{{l("GroupId")}}</label>
+									<input type="number" #PTTMessage_GroupId="ngModel" id="PTTMessage_GroupId" class="form-control" [(ngModel)]="pttMessage.groupId" name="GroupId"    />
+									<validation-messages [formCtrl]="PTTMessage_GroupId"></validation-messages>
+								</div>
+					
+								<div class="my-3">
+									<label class="form-label" for="PTTMessage_AudioPath">{{l("AudioPath")}}</label>
+									<input type="text" #PTTMessage_AudioPath="ngModel" id="PTTMessage_AudioPath" class="form-control" [(ngModel)]="pttMessage.audioPath" name="AudioPath"    />
+								    <validation-messages [formCtrl]="PTTMessage_AudioPath"></validation-messages>
+								</div>
+					
+								<div class="my5">
+									<label class="form-label" for="PTTMessage_DurationSeconds">{{l("DurationSeconds")}}</label>
+									<input type="number" #PTTMessage_DurationSeconds="ngModel" id="PTTMessage_DurationSeconds" class="form-control" [(ngModel)]="pttMessage.durationSeconds" name="DurationSeconds"    />
+									<validation-messages [formCtrl]="PTTMessage_DurationSeconds"></validation-messages>
+								</div>
+					
+
+                </div>
+                <div class="modal-footer">
+                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">{{l("Cancel")}}</button>
+                    <button type="submit" class="btn btn-primary blue" [disabled]="!pttMessageForm.form.valid" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

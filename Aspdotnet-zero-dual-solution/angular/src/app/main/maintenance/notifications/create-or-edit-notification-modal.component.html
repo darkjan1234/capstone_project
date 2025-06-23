@@ -1,0 +1,59 @@
+﻿<div bsModal #createOrEditModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="createOrEditModal" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form *ngIf="active" #notificationForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span *ngIf="notification.id">{{l("EditNotification")}}</span>
+                        <span *ngIf="!notification.id">{{l("CreateNewNotification")}}</span>
+                    </h4>                    
+                    
+                    
+                 <button type="button" class="btn-close" (click)="close()" aria-label="Close" [disabled]="saving"></button>
+             
+                </div>
+                <div class="modal-body">
+                 
+
+
+
+
+								<div class="my5">
+									<label class="form-label" for="Notification_UserId">{{l("UserId")}}</label>
+									<input type="number" #Notification_UserId="ngModel" id="Notification_UserId" class="form-control" [(ngModel)]="notification.userId" name="UserId"    />
+									<validation-messages [formCtrl]="Notification_UserId"></validation-messages>
+								</div>
+					
+								<div class="my-3">
+									<label class="form-label" for="Notification_Message">{{l("Message")}}</label>
+									<input type="text" #Notification_Message="ngModel" id="Notification_Message" class="form-control" [(ngModel)]="notification.message" name="Message"    />
+								    <validation-messages [formCtrl]="Notification_Message"></validation-messages>
+								</div>
+					
+								<br/>
+								<label class="form-check form-check-custom form-check-solid">
+                                    <input
+                                        id="Notification_Isread" 
+                                        #Notification_Isread="ngModel"
+                                        name="Isread" 
+                                        [(ngModel)]="notification.isread"
+                                        type="checkbox"
+                                        class="form-check-input"
+                                    />
+                                    <span class="form-check-label">
+                                        {{l("Isread")}}
+                                    </span>
+                                </label>
+                                <validation-messages [formCtrl]="Notification_Isread"></validation-messages>
+					
+
+                </div>
+                <div class="modal-footer">
+                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">{{l("Cancel")}}</button>
+                    <button type="submit" class="btn btn-primary blue" [disabled]="!notificationForm.form.valid" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
