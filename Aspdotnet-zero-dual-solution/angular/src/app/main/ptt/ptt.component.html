@@ -1,0 +1,147 @@
+<div class="content d-flex flex-column flex-column-fluid">
+    <div class="page-header">
+        <h1>Push to Talk</h1>
+        <p class="text-muted">Real-time voice communication</p>
+    </div>
+
+    <div class="d-flex flex-column-fluid">
+        <div class="container">
+            <!-- Connection Status -->
+            <div class="alert" [ngClass]="getConnectionStatusClass()" role="alert">
+                <i class="fa fa-wifi me-2"></i>
+                {{ getConnectionStatusText() }}
+            </div>
+
+            <!-- Group Join Section -->
+            <div class="card mb-4" *ngIf="!isInGroup">
+                <div class="card-header">
+                    <h3 class="card-title">Join PTT Group</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input
+                                type="text"
+                                class="form-control"
+                                [(ngModel)]="groupName"
+                                placeholder="Enter group name"
+                                (keyup.enter)="joinGroup()"
+                            />
+                        </div>
+                        <div class="col-md-4">
+                            <button
+                                class="btn btn-primary w-100"
+                                [disabled]="!isConnected || !groupName.trim()"
+                                (click)="joinGroup()"
+                            >
+                                <i class="fa fa-sign-in-alt me-2"></i>
+                                Join Group
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PTT Interface -->
+            <div *ngIf="isInGroup">
+                <!-- Group Info -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">
+                            <i class="fa fa-users me-2"></i>
+                            Group: {{ groupName }}
+                        </h3>
+                        <button class="btn btn-outline-danger btn-sm" (click)="leaveGroup()">
+                            <i class="fa fa-sign-out-alt me-2"></i>
+                            Leave Group
+                        </button>
+                    </div>
+                    <div class="card-body" *ngIf="groupMembers.length > 0">
+                        <h6>Group Members:</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span
+                                *ngFor="let member of groupMembers"
+                                class="badge"
+                                [ngClass]="talkingUsers[member.userId] ? 'badge-success' : 'badge-secondary'"
+                            >
+                                <i *ngIf="talkingUsers[member.userId]" class="fa fa-microphone me-1"></i>
+                                {{ member.userId }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PTT Button -->
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <h5>Push to Talk</h5>
+                            <p class="text-muted">Hold the button below to transmit your voice</p>
+                        </div>
+                        <button
+                            class="btn btn-lg rounded-circle ptt-button"
+                            [ngClass]="getPttButtonClass()"
+                            [disabled]="!isInGroup"
+                            (mousedown)="onPttMouseDown()"
+                            (mouseup)="onPttMouseUp()"
+                            (mouseleave)="onPttMouseLeave()"
+                            (touchstart)="onPttMouseDown()"
+                            (touchend)="onPttMouseUp()"
+                        >
+                            <i class="fa fa-microphone fa-2x"></i>
+                        </button>
+                        <div class="mt-2">
+                            <small class="text-muted">{{ getPttButtonText() }}</small>
+                        </div>
+                        <div *ngIf="isRecording" class="mt-2">
+                            <span class="badge badge-danger">
+                                <i class="fa fa-circle blink me-1"></i>
+                                Recording...
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fa fa-comments me-2"></i>
+                            Activity Log
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="messages-container" style="max-height: 400px; overflow-y: auto">
+                            <div *ngIf="messages.length === 0" class="text-center text-muted py-4">
+                                <i class="fa fa-info-circle fa-2x mb-2"></i>
+                                <p>No activity yet. Start talking to see messages here.</p>
+                            </div>
+                            <div *ngFor="let message of messages" class="message-item mb-2 p-2 border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <i
+                                        class="fa me-2"
+                                        [ngClass]="
+                                            message.type === 'audio'
+                                                ? 'fa-volume-up text-primary'
+                                                : 'fa-info-circle text-muted'
+                                        "
+                                    ></i>
+                                    <div class="flex-grow-1">
+                                        <div *ngIf="message.type === 'audio'">
+                                            <strong>Audio from {{ message.userId }}</strong>
+                                            <small class="text-muted ms-2">Duration: {{ message.duration }}s</small>
+                                        </div>
+                                        <div *ngIf="message.type === 'system'">
+                                            {{ message.message }}
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">{{ formatTime(message.timestamp) }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

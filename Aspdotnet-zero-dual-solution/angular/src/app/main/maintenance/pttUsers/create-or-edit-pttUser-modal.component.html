@@ -1,71 +1,119 @@
-﻿<div bsModal #createOrEditModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="createOrEditModal" aria-hidden="true" [config]="{backdrop: 'static'}">
+﻿<div
+    bsModal
+    #createOrEditModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="createOrEditModal"
+    aria-hidden="true"
+    [config]="{ backdrop: 'static' }"
+>
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form *ngIf="active" #pttUserForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
                 <div class="modal-header">
                     <h4 class="modal-title">
-                        <span *ngIf="pttUser.id">{{l("EditPttUser")}}</span>
-                        <span *ngIf="!pttUser.id">{{l("CreateNewPttUser")}}</span>
-                    </h4>                    
-                    
-                    
-                 <button type="button" class="btn-close" (click)="close()" aria-label="Close" [disabled]="saving"></button>
-             
+                        <span *ngIf="pttUser.id">{{ l('EditPttUser') }}</span>
+                        <span *ngIf="!pttUser.id">{{ l('CreateNewPttUser') }}</span>
+                    </h4>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        (click)="close()"
+                        aria-label="Close"
+                        [disabled]="saving"
+                    ></button>
                 </div>
                 <div class="modal-body">
-                 
+                    <div class="my-3">
+                        <label class="form-label" for="PttUser_FullName">{{ l('FullName') }} *</label>
+                        <input
+                            type="text"
+                            #PttUser_FullName="ngModel"
+                            id="PttUser_FullName"
+                            class="form-control"
+                            [(ngModel)]="pttUser.fullName"
+                            name="FullName"
+                            required
+                        />
+                        <validation-messages [formCtrl]="PttUser_FullName"></validation-messages>
+                    </div>
 
+                    <div class="my-3">
+                        <label class="form-label" for="PttUser_Email">{{ l('Email') }} *</label>
+                        <input
+                            type="text"
+                            #PttUser_Email="ngModel"
+                            id="PttUser_Email"
+                            class="form-control"
+                            [(ngModel)]="pttUser.email"
+                            name="Email"
+                            required
+                        />
+                        <validation-messages [formCtrl]="PttUser_Email"></validation-messages>
+                    </div>
 
+                    <div class="my-3">
+                        <label class="form-label" for="PttUser_PasswordHash">{{ l('PasswordHash') }} *</label>
+                        <input
+                            type="text"
+                            #PttUser_PasswordHash="ngModel"
+                            id="PttUser_PasswordHash"
+                            class="form-control"
+                            [(ngModel)]="pttUser.passwordHash"
+                            name="PasswordHash"
+                            required
+                        />
+                        <validation-messages [formCtrl]="PttUser_PasswordHash"></validation-messages>
+                    </div>
 
+                    <div class="my-3">
+                        <label class="form-label" for="PttUser_Role">{{ l('Role') }} *</label>
+                        <input
+                            type="text"
+                            #PttUser_Role="ngModel"
+                            id="PttUser_Role"
+                            class="form-control"
+                            [(ngModel)]="pttUser.role"
+                            name="Role"
+                            required
+                        />
+                        <validation-messages [formCtrl]="PttUser_Role"></validation-messages>
+                    </div>
 
-								<div class="my-3">
-									<label class="form-label" for="PttUser_FullName">{{l("FullName")}} *</label>
-									<input type="text" #PttUser_FullName="ngModel" id="PttUser_FullName" class="form-control" [(ngModel)]="pttUser.fullName" name="FullName"     required/>
-								    <validation-messages [formCtrl]="PttUser_FullName"></validation-messages>
-								</div>
-					
-								<div class="my-3">
-									<label class="form-label" for="PttUser_Email">{{l("Email")}} *</label>
-									<input type="text" #PttUser_Email="ngModel" id="PttUser_Email" class="form-control" [(ngModel)]="pttUser.email" name="Email"     required/>
-								    <validation-messages [formCtrl]="PttUser_Email"></validation-messages>
-								</div>
-					
-								<div class="my-3">
-									<label class="form-label" for="PttUser_PasswordHash">{{l("PasswordHash")}} *</label>
-									<input type="text" #PttUser_PasswordHash="ngModel" id="PttUser_PasswordHash" class="form-control" [(ngModel)]="pttUser.passwordHash" name="PasswordHash"     required/>
-								    <validation-messages [formCtrl]="PttUser_PasswordHash"></validation-messages>
-								</div>
-					
-								<div class="my-3">
-									<label class="form-label" for="PttUser_Role">{{l("Role")}} *</label>
-									<input type="text" #PttUser_Role="ngModel" id="PttUser_Role" class="form-control" [(ngModel)]="pttUser.role" name="Role"     required/>
-								    <validation-messages [formCtrl]="PttUser_Role"></validation-messages>
-								</div>
-					
-								<br/>
-								<label class="form-check form-check-custom form-check-solid">
-                                    <input
-                                        id="PttUser_Status" 
-                                        #PttUser_Status="ngModel"
-                                        name="Status" 
-                                        [(ngModel)]="pttUser.status"
-                                        type="checkbox"
-                                        class="form-check-input"
-                                    />
-                                    <span class="form-check-label">
-                                        {{l("Status")}}
-                                    </span>
-                                </label>
-                                <validation-messages [formCtrl]="PttUser_Status"></validation-messages>
-					
-
+                    <br />
+                    <label class="form-check form-check-custom form-check-solid">
+                        <input
+                            id="PttUser_Status"
+                            #PttUser_Status="ngModel"
+                            name="Status"
+                            [(ngModel)]="pttUser.status"
+                            type="checkbox"
+                            class="form-check-input"
+                        />
+                        <span class="form-check-label">
+                            {{ l('Status') }}
+                        </span>
+                    </label>
+                    <validation-messages [formCtrl]="PttUser_Status"></validation-messages>
                 </div>
                 <div class="modal-footer">
-                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">{{l("Cancel")}}</button>
-                    <button type="submit" class="btn btn-primary blue" [disabled]="!pttUserForm.form.valid" [buttonBusy]="saving" [busyText]="l('SavingWithThreeDot')"><i class="fa fa-save"></i> <span>{{l("Save")}}</span></button>
+                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">
+                        {{ l('Cancel') }}
+                    </button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary blue"
+                        [disabled]="!pttUserForm.form.valid"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Savereh') }}</span>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-
 </div>

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = 'https://10.0.2.2:44311/api/services/app/UserLogin';
+  final String baseUrl = 'http://192.168.1.28:44301/api/services/app/UserLogin';
 
   Future<List<dynamic>> getUserLoginAttempts() async {
     final response = await http.get(

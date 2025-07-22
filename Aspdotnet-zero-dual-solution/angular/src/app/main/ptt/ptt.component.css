@@ -1,0 +1,140 @@
+.ptt-button {
+    width: 120px;
+    height: 120px;
+    border-radius: 50% !important;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.ptt-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.ptt-button:active {
+    transform: scale(0.95);
+}
+
+.ptt-button.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    animation: pulse 1s infinite;
+}
+
+.ptt-button.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.ptt-button.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    cursor: not-allowed;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.blink {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
+}
+
+.message-item {
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.message-item:hover {
+    background-color: #e9ecef;
+}
+
+.messages-container {
+    scrollbar-width: thin;
+    scrollbar-color: #6c757d #f1f1f1;
+}
+
+.messages-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+    background: #6c757d;
+    border-radius: 3px;
+}
+
+.messages-container::-webkit-scrollbar-thumb:hover {
+    background: #495057;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .ptt-button {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .ptt-button:hover {
+        transform: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+}

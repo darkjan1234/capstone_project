@@ -23,6 +23,7 @@ using Business.Solutions.Configuration;
 using Business.Solutions.EntityFrameworkCore;
 using Business.Solutions.Identity;
 using Business.Solutions.Web.Chat.SignalR;
+using Business.Solutions.Web.PTT;
 using Business.Solutions.Web.Common;
 using Swashbuckle.AspNetCore.Swagger;
 using Business.Solutions.Web.Swagger;
@@ -251,6 +252,7 @@ namespace Business.Solutions.Web.Startup
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");
                 endpoints.MapHub<ChatHub>("/signalr-chat");
+                endpoints.MapHub<PttHub>("/signalr-ptt");
 
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
@@ -293,18 +295,33 @@ namespace Business.Solutions.Web.Startup
         {
             services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
             {
-                options.Listen(new System.Net.IPEndPoint(System.Net.IPAddress.Any, 443),
-                    listenOptions =>
+                // Listen on HTTP port 44311 for mobile app access
+                options.Listen(new System.Net.IPEndPoint(System.Net.IPAddress.Any, 44311));
+
+                // Listen on HTTPS port 443 (if certificate is available)
+                try
+                {
+                    var certPassword = _appConfiguration.GetValue<string>("Kestrel:Certificates:Default:Password");
+                    var certPath = _appConfiguration.GetValue<string>("Kestrel:Certificates:Default:Path");
+
+                    if (!string.IsNullOrEmpty(certPath) && System.IO.File.Exists(certPath))
                     {
-                        var certPassword = _appConfiguration.GetValue<string>("Kestrel:Certificates:Default:Password");
-                        var certPath = _appConfiguration.GetValue<string>("Kestrel:Certificates:Default:Path");
-                        var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certPath,
-                            certPassword);
-                        listenOptions.UseHttps(new HttpsConnectionAdapterOptions()
-                        {
-                            ServerCertificate = cert
-                        });
-                    });
+                        var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certPath, certPassword);
+                        options.Listen(new System.Net.IPEndPoint(System.Net.IPAddress.Any, 443),
+                            listenOptions =>
+                            {
+                                listenOptions.UseHttps(new HttpsConnectionAdapterOptions()
+                                {
+                                    ServerCertificate = cert
+                                });
+                            });
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    // Log certificate error but continue with HTTP only
+                    System.Console.WriteLine($"Certificate error: {ex.Message}. Running HTTP only.");
+                }
             });
         }
 
@@ -312,7 +329,7 @@ namespace Business.Solutions.Web.Startup
         {
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo() {Title = "PTT-POI-REGION 12 API", Version = "v1"});
+                options.SwaggerDoc("v1", new OpenApiInfo() { Title = "PTT-POI-REGION 12 API", Version = "v1" });
                 options.DocInclusionPredicate((docName, description) => true);
                 options.ParameterFilter<SwaggerEnumParameterFilter>();
                 options.SchemaFilter<SwaggerEnumSchemaFilter>();

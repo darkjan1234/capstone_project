@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'ptt_screen.dart';
 
 class UserLoginDashboard extends StatefulWidget {
   final String token;
@@ -23,7 +24,7 @@ class _UserLoginDashboardState extends State<UserLoginDashboard> {
 
   Future<void> fetchLoginAttempts() async {
     final response = await http.get(
-      Uri.parse('https://192.168.1.25:44311/api/services/app/UserLogin/GetUserLoginAttempts'),
+      Uri.parse('https://10.0.2.2:44311/api/services/app/UserLogin/GetUserLoginAttempts'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${widget.token}',
@@ -45,7 +46,26 @@ class _UserLoginDashboardState extends State<UserLoginDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('User Login Attempts')),
+      appBar: AppBar(
+        title: Text('User Login Attempts'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.radio),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PttScreen(
+                    token: widget.token,
+                    serverUrl: 'https://10.0.2.2:44311',
+                  ),
+                ),
+              );
+            },
+            tooltip: 'Open PTT',
+          ),
+        ],
+      ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(

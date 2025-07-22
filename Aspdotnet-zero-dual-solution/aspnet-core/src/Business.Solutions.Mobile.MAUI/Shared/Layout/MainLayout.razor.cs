@@ -81,7 +81,7 @@ namespace Business.Solutions.Mobile.MAUI.Shared.Layout
               If you are using a real Android device, set it as your computer's local IP and 
                  make sure your Android device and your computer is connecting to the internet via your local Wi-Fi.
            */
-            DebugServerIpAddresses.Current = "10.0.2.2";
+            DebugServerIpAddresses.Current = "192.168.1.28";
 
             ConfigureFlurlHttp();
             App.LoadPersistedSession();
