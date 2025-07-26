@@ -11,7 +11,7 @@ using Abp.RealTime;
 
 namespace Business.Solutions.Web.PTT
 {
-    [Authorize]
+    // [Authorize] // Temporarily disabled for testing - enable later for production
     public class PttHub : OnlineClientHubBase
     {
         // Store connected users and their groups

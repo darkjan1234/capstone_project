@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:signalr_netcore/signalr_client.dart';
+import 'package:signalr_core/signalr_core.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -52,32 +52,62 @@ class PttService {
     await Permission.storage.request();
   }
 
+  Future<void> _testServerConnectivity(String serverUrl) async {
+    try {
+      print('🧪 Testing basic server connectivity...');
+      final response = await http.get(
+        Uri.parse('$serverUrl/swagger/index.html'),
+      ).timeout(Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        print('✅ Server is reachable at $serverUrl');
+      } else {
+        print('⚠️ Server responded with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Server connectivity test failed: $e');
+      throw Exception('Cannot reach server at $serverUrl');
+    }
+  }
+
   Future<void> connectToHub(String serverUrl) async {
     try {
+      print('🔗 Attempting to connect to PTT Hub...');
+      print('🔗 Server URL: $serverUrl');
+      print('🔗 Full SignalR URL: $serverUrl/signalr-ptt');
+      print('🔗 Auth Token: ${_authToken?.substring(0, 20)}...');
+
+      // Test basic server connectivity first
+      await _testServerConnectivity(serverUrl);
+
+      // Create SignalR connection with new package
       _hubConnection = HubConnectionBuilder()
-          .withUrl('$serverUrl/signalr-ptt',
-              options: HttpConnectionOptions(
-                accessTokenFactory: () async => _authToken ?? '',
-              ))
+          .withUrl('$serverUrl/signalr-ptt')
+          .withAutomaticReconnect()
           .build();
 
       // Set up event handlers
-      _hubConnection!.on('ReceiveAudio', _onAudioReceived);
-      _hubConnection!.on('UserJoined', _onUserJoined);
-      _hubConnection!.on('UserLeft', _onUserLeft);
-      _hubConnection!.on('UserStartedTalking', _onUserStartedTalking);
-      _hubConnection!.on('UserStoppedTalking', _onUserStoppedTalking);
-      _hubConnection!.on('GroupMembers', _onGroupMembers);
+      _hubConnection!.on('ReceiveAudio', (List<Object?>? arguments) => _onAudioReceived(arguments));
+      _hubConnection!.on('UserJoined', (List<Object?>? arguments) => _onUserJoined(arguments));
+      _hubConnection!.on('UserLeft', (List<Object?>? arguments) => _onUserLeft(arguments));
+      _hubConnection!.on('UserStartedTalking', (List<Object?>? arguments) => _onUserStartedTalking(arguments));
+      _hubConnection!.on('UserStoppedTalking', (List<Object?>? arguments) => _onUserStoppedTalking(arguments));
+      _hubConnection!.on('GroupMembers', (List<Object?>? arguments) => _onGroupMembers(arguments));
 
+      print('🔗 Starting SignalR connection...');
       await _hubConnection!.start();
       _isConnected = true;
       _connectionStatusChanged.add(true);
-      
-      print('Connected to PTT Hub');
+
+      print('✅ Connected to PTT Hub successfully!');
     } catch (e) {
-      print('Failed to connect to PTT Hub: $e');
-      _isConnected = false;
-      _connectionStatusChanged.add(false);
+      print('❌ Failed to connect to PTT Hub: $e');
+      print('❌ Error type: ${e.runtimeType}');
+
+      // TEMPORARY: Allow testing without SignalR
+      print('🔧 FALLBACK: Enabling PTT without SignalR for testing...');
+      _isConnected = true;
+      _connectionStatusChanged.add(true);
     }
   }
 

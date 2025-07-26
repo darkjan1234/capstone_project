@@ -12,15 +12,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final usernameController = TextEditingController(text: 'admin'); // Pre-fill for testing
   final passwordController = TextEditingController(text: '123qwe'); // Pre-fill for testing
   bool isLoading = false;
+  String? workingIP; // Store the working IP address
 
   Future<void> testConnection() async {
     print('Testing connection to server...');
 
     // Test multiple possible IP addresses
     List<String> testIPs = [
-      '192.168.1.28',   // Your regular WiFi IP (primary)
+      '10.0.2.2',       // Android emulator host (try first)
+      '192.168.1.104',  // Your actual WiFi IP (primary)
       '192.168.137.1',  // Your WiFi hotspot IP
-      '10.0.2.2',       // Android emulator host
       '192.168.0.1',    // Common router IP
     ];
 
@@ -34,7 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Update the working IP
         if (response.statusCode == 200) {
-          print('Found working server at: $ip:44300');
+          workingIP = ip;
+          print('Found working server at: $ip:44311');
           return;
         }
       } catch (e) {
@@ -51,6 +53,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Test connection first
     await testConnection();
+
+    // If no working IP found, try common defaults
+    if (workingIP == null) {
+      print('No working IP found, trying common defaults...');
+      workingIP = '10.0.2.2'; // Android emulator default
+    }
 
     if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
       showDialog(
@@ -72,10 +80,11 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = true);
 
     try {
-      print('Attempting to connect to: http://192.168.137.1:44311/api/TokenAuth/Authenticate');
-
+      // Use the working IP or fallback to default
+      String serverIP = workingIP ?? '192.168.137.1';
+      print('Attempting to connect to: http://$serverIP:44311/api/TokenAuth/Authenticate');
       final response = await http.post(
-        Uri.parse('http://192.168.137.1:44311/api/TokenAuth/Authenticate'),
+        Uri.parse('http://$serverIP:44311/api/TokenAuth/Authenticate'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'userNameOrEmailAddress': usernameController.text,
@@ -102,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
             MaterialPageRoute(
               builder: (_) => PttScreen(
                 token: token,
-                serverUrl: 'http://192.168.137.1:44311/pttHub',
+                serverUrl: 'http://$serverIP:44311',
               ),
             ),
           );
