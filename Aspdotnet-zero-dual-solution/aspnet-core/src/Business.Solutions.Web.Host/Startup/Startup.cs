@@ -307,7 +307,7 @@ namespace Business.Solutions.Web.Startup
                     if (!string.IsNullOrEmpty(certPath) && System.IO.File.Exists(certPath))
                     {
                         var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(certPath, certPassword);
-                        options.Listen(new System.Net.IPEndPoint(System.Net.IPAddress.Any, 443),
+                        options.Listen(new System.Net.IPEndPoint(System.Net.IPAddress.Any, 44301),
                             listenOptions =>
                             {
                                 listenOptions.UseHttps(new HttpsConnectionAdapterOptions()
