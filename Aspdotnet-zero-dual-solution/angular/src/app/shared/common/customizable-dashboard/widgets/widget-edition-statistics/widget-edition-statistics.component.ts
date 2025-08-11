@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { filter as _filter } from 'lodash-es';
 import { WidgetComponentBaseComponent } from '../widget-component-base';
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
-import { WidgetOnResizeEventHandler, WIDGETONRESIZEEVENTHANDLERTOKEN } from '../../customizable-dashboard.component';
+// import { WidgetOnResizeEventHandler, WIDGETONRESIZEEVENTHANDLERTOKEN } from '../../customizable-dashboard.component';
 
 @Component({
     selector: 'app-widget-edition-statistics',
@@ -26,12 +26,12 @@ export class WidgetEditionStatisticsComponent extends WidgetComponentBaseCompone
         injector: Injector,
         private _hostDashboardServiceProxy: HostDashboardServiceProxy,
         private _dateTimeService: DateTimeService,
-        @Inject(WIDGETONRESIZEEVENTHANDLERTOKEN) private _widgetOnResizeEventHandler: WidgetOnResizeEventHandler
+        // @Inject(WIDGETONRESIZEEVENTHANDLERTOKEN) private _widgetOnResizeEventHandler: WidgetOnResizeEventHandler,
     ) {
         super(injector);
-        _widgetOnResizeEventHandler.onResize.subscribe(()=>{
-            this.runDelayed(this.showChart);
-        });
+        // _widgetOnResizeEventHandler.onResize.subscribe(() => {
+        //     this.runDelayed(this.showChart);
+        // });
     }
 
     ngOnInit(): void {

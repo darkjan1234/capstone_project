@@ -158,3 +158,122 @@ gridster.no-tab{
  #PagesDiv{
   margin-left: -20px;
 }
+
+
+:host{
+  /* default theme (ma-override via [ngStyle]) */
+  --pttoi-accent:#22d3ee;
+  --pttoi-ocean:#0ea5e9;
+  --pttoi-land:#16a34a;
+  --pttoi-text:#e5e7eb;
+  --pttoi-sub:#9ca3af;
+  --pttoi-sky-1:#0f172a;
+  --pttoi-sky-2:#111827;
+
+  display:grid;
+  place-items:center;
+  width:100%;
+  min-height:280px;
+  padding:12px 16px;
+}
+
+/* copy diri ang CSS rules gikan sa akong previous reply
+   (.pttoi-hero, .pttoi-svg, .pttoi-title, .earth, .continents, animations, etc.) */
+:host{
+  /* defaults — ma-override via [ngStyle] */
+  --pttoi-accent:#22d3ee;
+  --pttoi-ocean:#0ea5e9;
+  --pttoi-land:#16a34a;
+  --pttoi-text:#e5e7eb;
+  --pttoi-sub:#9ca3af;
+  --pttoi-sky-1:#0f172a;
+  --pttoi-sky-2:#111827;
+
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 280px;
+  padding: 12px 16px;
+}
+
+.pttoi-hero{ width:100%; }
+.pttoi-svg{ width:100%; max-width:980px; height:auto; }
+
+.pttoi-title{
+  font: 700 34px/1.05 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;
+  fill: var(--pttoi-text);
+  letter-spacing:.4px;
+}
+.pttoi-title-sub{
+  font: 600 26px/1.05 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;
+  fill: var(--pttoi-sub);
+}
+.pttoi-underline{
+  fill: var(--pttoi-accent);
+  opacity:.3;
+  animation: glowline 2.6s ease-in-out infinite;
+}
+@keyframes glowline{
+  0%,100%{ opacity:.25 }
+  50%{ opacity:.8 }
+}
+
+/* tower */
+.tower-pole{ fill: #cbd5e1 }
+.tower-base{ fill: #94a3b8 }
+.tower-head{ fill: var(--pttoi-accent) }
+.beacon-pulse{
+  animation: pulse 2.2s ease-out infinite;
+  transform-origin: center;
+}
+@keyframes pulse{
+  0%{ transform: scale(.4); opacity:.75 }
+  70%{ transform: scale(1); opacity:.05 }
+  100%{ transform: scale(1.1); opacity:0 }
+}
+
+/* arcs */
+.signal-arcs .arc{
+  fill:none;
+  stroke: var(--pttoi-accent);
+  stroke-width:3;
+  stroke-linecap:round;
+  opacity:.15;
+}
+.signal-arcs .a1{ animation: arcPulse 1.8s ease-in-out infinite }
+.signal-arcs .a2{ animation: arcPulse 1.8s .15s ease-in-out infinite }
+.signal-arcs .a3{ animation: arcPulse 1.8s .3s ease-in-out infinite }
+@keyframes arcPulse{
+  0%,100%{ opacity:.1 }
+  50%{ opacity:.8 }
+}
+
+/* ping */
+.ping{ fill: var(--pttoi-accent) }
+
+/* earth */
+.earth{
+  fill: var(--pttoi-ocean);
+  filter: drop-shadow(0 0 16px rgba(34,211,238,.25));
+}
+.earth-shine{ fill: white; opacity:.05; }
+
+/* continents + clouds */
+.continents{
+  fill: var(--pttoi-land);
+  opacity:.92;
+  transform-origin: 640px 180px;
+  animation: spin 18s linear infinite;
+}
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+.cloud{ fill:#fff; opacity:.18; }
+.clouds .cloud-band{ animation: clouds 22s linear infinite; }
+@keyframes clouds{ from{ transform: translateX(-60px) } to{ transform: translateX(60px) } }
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .beacon-pulse, .signal-arcs .arc, .ping, .continents, .clouds .cloud-band, .pttoi-underline{
+    animation: none !important;
+  }
+}

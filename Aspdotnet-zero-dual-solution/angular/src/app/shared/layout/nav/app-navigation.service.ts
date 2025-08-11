@@ -9,8 +9,8 @@ import { AppMenuItem } from './app-menu-item';
 export class AppNavigationService {
     constructor(
         private _permissionCheckerService: PermissionCheckerService,
-        private _appSessionService: AppSessionService
-    ) { }
+        private _appSessionService: AppSessionService,
+    ) {}
 
     getMenu(): AppMenu {
         return new AppMenu('MainMenu', 'MainMenu', [
@@ -18,25 +18,40 @@ export class AppNavigationService {
                 'Dashboard',
                 'Pages.Administration.Host.Dashboard',
                 'flaticon-line-graph',
-                '/app/admin/hostDashboard'
+                '/app/admin/hostDashboard',
             ),
             new AppMenuItem('Dashboard', 'Pages.Tenant.Dashboard', 'flaticon-line-graph', '/app/main/dashboard'),
             new AppMenuItem('Tenants', 'Pages.Tenants', 'flaticon-list-3', '/app/admin/tenants'),
-           
-            new AppMenuItem('PttUsers', 'Pages.PttUsers', 'flaticon-more', '/app/main/maintenance/pttUsers'),
-            
+
+            // new AppMenuItem('PttUsers', 'Pages.PttUsers', 'flaticon-more', '/app/main/maintenance/pttUsers'),
+
             new AppMenuItem('Groups', 'Pages.Groups', 'flaticon-more', '/app/main/maintenance/groups'),
-            
-            new AppMenuItem('GroupMembers', 'Pages.GroupMembers', 'flaticon-more', '/app/main/maintenance/groupMembers'),
-            
+
+            new AppMenuItem(
+                'GroupMembers',
+                'Pages.GroupMembers',
+                'flaticon-more',
+                '/app/main/maintenance/groupMembers',
+            ),
+
             new AppMenuItem('PTTMessages', 'Pages.PTTMessages', 'flaticon-more', '/app/main/maintenance/pttMessages'),
-            
-            new AppMenuItem('CommunicationHistories', 'Pages.CommunicationHistories', 'flaticon-more', '/app/main/maintenance/communicationHistories'),
-            
-            new AppMenuItem('Notifications', 'Pages.Notifications', 'flaticon-more', '/app/main/maintenance/notifications'),
-            
+
+            new AppMenuItem(
+                'CommunicationHistories',
+                'Pages.CommunicationHistories',
+                'flaticon-more',
+                '/app/main/maintenance/communicationHistories',
+            ),
+
+            new AppMenuItem(
+                'Notifications',
+                'Pages.Notifications',
+                'flaticon-more',
+                '/app/main/maintenance/notifications',
+            ),
+
             new AppMenuItem('Logs', 'Pages.Logs', 'flaticon-more', '/app/main/maintenance/logs'),
-             new AppMenuItem('Editions', 'Pages.Editions', 'flaticon-app', '/app/admin/editions'),
+            new AppMenuItem('Editions', 'Pages.Editions', 'flaticon-app', '/app/admin/editions'),
             new AppMenuItem(
                 'Administration',
                 '',
@@ -48,7 +63,7 @@ export class AppNavigationService {
                         'OrganizationUnits',
                         'Pages.Administration.OrganizationUnits',
                         'flaticon-map',
-                        '/app/admin/organization-units'
+                        '/app/admin/organization-units',
                     ),
                     new AppMenuItem('Roles', 'Pages.Administration.Roles', 'flaticon-suitcase', '/app/admin/roles'),
                     new AppMenuItem('Users', 'Pages.Administration.Users', 'flaticon-users', '/app/admin/users'),
@@ -57,43 +72,43 @@ export class AppNavigationService {
                         'Pages.Administration.Languages',
                         'flaticon-tabs',
                         '/app/admin/languages',
-                        ['/app/admin/languages/{name}/texts']
+                        ['/app/admin/languages/{name}/texts'],
                     ),
                     new AppMenuItem(
                         'AuditLogs',
                         'Pages.Administration.AuditLogs',
                         'flaticon-folder-1',
-                        '/app/admin/auditLogs'
+                        '/app/admin/auditLogs',
                     ),
                     new AppMenuItem(
                         'Maintenance',
                         'Pages.Administration.Host.Maintenance',
                         'flaticon-lock',
-                        '/app/admin/maintenance'
+                        '/app/admin/maintenance',
                     ),
                     new AppMenuItem(
                         'Subscription',
                         'Pages.Administration.Tenant.SubscriptionManagement',
                         'flaticon-refresh',
-                        '/app/admin/subscription-management'
+                        '/app/admin/subscription-management',
                     ),
                     new AppMenuItem(
                         'VisualSettings',
                         'Pages.Administration.UiCustomization',
                         'flaticon-medical',
-                        '/app/admin/ui-customization'
+                        '/app/admin/ui-customization',
                     ),
                     new AppMenuItem(
                         'WebhookSubscriptions',
                         'Pages.Administration.WebhookSubscription',
                         'flaticon2-world',
-                        '/app/admin/webhook-subscriptions'
+                        '/app/admin/webhook-subscriptions',
                     ),
                     new AppMenuItem(
                         'DynamicProperties',
                         'Pages.Administration.DynamicProperties',
                         'flaticon-interface-8',
-                        '/app/admin/dynamic-property'
+                        '/app/admin/dynamic-property',
                     ),
                     new AppMenuItem(
                         'Notifications',
@@ -102,39 +117,34 @@ export class AppNavigationService {
                         '',
                         [],
                         [
-                            new AppMenuItem(
-                                'Inbox',
-                                '',
-                                'flaticon-mail-1',
-                                '/app/notifications'
-                            ),
+                            new AppMenuItem('Inbox', '', 'flaticon-mail-1', '/app/notifications'),
                             new AppMenuItem(
                                 'MassNotifications',
                                 'Pages.Administration.MassNotification',
                                 'flaticon-paper-plane',
-                                '/app/admin/mass-notifications'
-                            )
-                        ]
+                                '/app/admin/mass-notifications',
+                            ),
+                        ],
                     ),
                     new AppMenuItem(
                         'Settings',
                         'Pages.Administration.Host.Settings',
                         'flaticon-settings',
-                        '/app/admin/hostSettings'
+                        '/app/admin/hostSettings',
                     ),
                     new AppMenuItem(
                         'Settings',
                         'Pages.Administration.Tenant.Settings',
                         'flaticon-settings',
-                        '/app/admin/tenantSettings'
-                    )
-                ]
+                        '/app/admin/tenantSettings',
+                    ),
+                ],
             ),
             new AppMenuItem(
                 'DemoUiComponents',
                 'Pages.DemoUiComponents',
                 'flaticon-shapes',
-                '/app/admin/demo-ui-components'
+                '/app/admin/demo-ui-components',
             ),
         ]);
     }

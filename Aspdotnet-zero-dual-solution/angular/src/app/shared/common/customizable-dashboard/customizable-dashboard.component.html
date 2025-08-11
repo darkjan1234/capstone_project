@@ -1,233 +1,281 @@
 <div [@routerTransition]>
-    <sub-header [title]="'Dashboard' | localize" [description]="'DashboardHeaderInfo' | localize">
-        <div role="actions" class="d-flex align-items-center">
-            <button
-                type="button"
-                *ngIf="!loading && userDashboard && userDashboard.filters && userDashboard.filters.length > 0"
-                class="btn btn-light-primary btn-filter"
-                (click)="filterModal.show()"
-            >
-                <i class="fa fa-filter"></i>
-                {{ 'Filter' | localize }}
-            </button>
+    <!-- Animated PTT-over-Internet Hero (inline CSS, no external .css) -->
+    <div class="pttoi-hero" aria-label="Push to Talk over Internet animated logo">
+        <svg class="pttoi-svg" viewBox="0 0 900 360" role="img">
+            <defs>
+                <radialGradient id="gGlow" cx="50%" cy="50%" r="60%">
+                    <stop offset="0%" stop-color="var(--pttoi-accent, #4bc0ff)" stop-opacity="0.45" />
+                    <stop offset="70%" stop-color="var(--pttoi-accent, #4bc0ff)" stop-opacity="0" />
+                </radialGradient>
 
-            <label class="form-check form-check-custom form-check-solid form-switch">
-                <input
-                    type="checkbox"
-                    class="form-check-input"
-                    (change)="changeEditMode()"
-                    [checked]="editModeEnabled"
-                />
-                <span class="form-check-label">
-                    {{ 'EditMode' | localize }}
-                </span>
-            </label>
-        </div>
-    </sub-header>
+                <linearGradient id="gSky" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="var(--pttoi-sky-1, #0f172a)" />
+                    <stop offset="100%" stop-color="var(--pttoi-sky-2, #111827)" />
+                </linearGradient>
 
-    <div [class]="containerClass" *ngIf="!loading">
-        <div class="row" *ngIf="!userDashboard?.pages?.length">
-            <div class="col-md-12">
-                <div class="alert alert-warning" role="alert">
-                    {{ 'Dashboard_NoPageDefined_Warning' | localize }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12" style="z-index: 0">
-                <tabset #dashboardTabs [justified]="false" [ngClass]="{ 'nav-hidden': !moreThanOnePage() }">
-                    <tab
-                        *ngFor="let page of userDashboard?.pages || []; let i = index"
-                        heading="{{ page.name }}"
-                        (selectTab)="selectPageTab(page.id)"
-                    >
-                        <gridster [options]="options[i]"  perfectScrollbar [perfectScrollOptions]="{ wheelPropagation: false }" [ngClass]="{ 'no-tab': !moreThanOnePage() }">
-                            <gridster-item
-                                *ngFor="let widget of page.widgets"
-                                [item]="widget.gridInformation"
-                                (itemResize)="onGridSterItemResize(widget)"
-                            >
-                                <ng-container
-                                    *ngComponentOutlet="
-                                        widget.component;
-                                        injector: this.widgetSubjects[widget.guid].injector
-                                    "
-                                ></ng-container>
-                                <button
-                                    class="btn btn-sm bg-danger deleteWidgetButton"
-                                    *ngIf="editModeEnabled"
-                                    (click)="removeItem(widget.gridInformation)"
-                                >
-                                    <i class="la la-times text-white"></i>
-                                </button>
-                            </gridster-item>
-                        </gridster>
-                    </tab>
-                </tabset>
-            </div>
-            <div class="div-dashboard-customization d-flex w-auto shadow-lg" *ngIf="editModeEnabled">
-                <div class="me-1 border-right">
-                    <button
-                        type="button"
-                        id="AddWidgetButton"
-                        class="btn btn-sm btn-warning btn-elevate-hover btn-pill"
-                        (click)="openAddWidgetModal()"
-                        [disabled]="selectedPage.id === ''"
-                    >
-                        <i class="fa fa-plus"></i>
-                        {{ 'AddWidget' | localize }}
-                    </button>
-                    &nbsp;
-                </div>
-                <div class="ms-1 me-1 border-right">
-                    <div
-                        class="btn-group"
-                        dropdown
-                        #dropdownAddPage="bs-dropdown"
-                        (onShown)="addPageDropdownShown()"
-                        [dropup]="true"
-                        [insideClick]="true"
-                    >
-                        <button
-                            id="dropdownButtonAddPage"
-                            dropdownToggle
-                            type="button"
-                            class="btn btn-sm btn-primary dropdown-toggle btn-elevate-hover btn-pill"
-                            aria-controls="dropdownMenuAddPage"
-                        >
-                            <i class="fa fa-plus"></i>
-                            {{ 'AddPage' | localize }}
-                            <span class="caret"></span>
-                        </button>
-                        <ul
-                            id="dropdownMenuAddPage"
-                            *dropdownMenu
-                            class="dropdown-menu p-10"
-                            role="menu"
-                            aria-labelledby="dropdownButtonAddPage"
-                        >
-                            <li role="menuitem">
-                                <div class="mb-5">
-                                    <label class="form-label">{{ 'NewPageName' | localize }}</label>
-                                    <input type="text" class="form-control" placeholder="" [(ngModel)]="addPageInput" />
-                                </div>
-                                <button class="btn btn-sm w-100 btn-info" (click)="addNewPage(addPageInput)">
-                                    {{ 'Save' | localize }}
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                    <div
-                        class="btn-group"
-                        dropdown
-                        #dropdownRenamePage="bs-dropdown"
-                        (onShown)="renamePageDropdownShown()"
-                        [dropup]="true"
-                        [insideClick]="true"
-                        [isDisabled]="selectedPage.id === ''"
-                    >
-                        <button
-                            id="dropdownButtonRenamePage"
-                            dropdownToggle
-                            type="button"
-                            class="btn btn-sm btn-info btn-elevate-hover btn-pill dropdown-toggle"
-                            aria-controls="dropdownMenuRenamePage"
-                        >
-                            <i class="fa fa-edit"></i>
-                            {{ 'RenamePage' | localize }}
-                            <span class="caret"></span>
-                        </button>
-                        <ul
-                            id="dropdownMenuRenamePage"
-                            *dropdownMenu
-                            class="dropdown-menu p-10"
-                            role="menu"
-                            aria-labelledby="dropdownButtonRenamePage"
-                        >
-                            <li role="menuitem">
-                                <div class="mb-5">
-                                    <label class="form-label">{{ 'PageNewName' | localize }}</label>
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        placeholder="{{ selectedPage.name }}"
-                                        [(ngModel)]="renamePageInput"
-                                    />
-                                </div>
-                                <button (click)="renamePage(renamePageInput)" class="btn btn-sm w-100 btn-info">
-                                    {{ 'Save' | localize }}
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                    <button
-                        id="DeletePageButton"
-                        class="btn btn-sm btn-danger btn-elevate-hover btn-pill"
-                        (click)="deletePage()"
-                        [disabled]="selectedPage.id === ''"
-                    >
-                        <i class="fa fa-trash"></i>
-                        <span *ngIf="userDashboard && userDashboard.pages.length > 1">
-                            {{ 'DeletePage' | localize }}
-                        </span>
-                        <span *ngIf="userDashboard && userDashboard.pages.length == 1">
-                            {{ 'BackToDefaultPage' | localize }}
-                        </span>
+                <clipPath id="earth-clip">
+                    <circle cx="640" cy="180" r="95"></circle>
+                </clipPath>
 
-                        <span *ngIf="!userDashboard || userDashboard.pages.length == 0">
-                            {{ 'BackToDefaultPage' | localize }}
-                        </span>
-                    </button>
-                    &nbsp;
-                </div>
-                <div class="ms-1">
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-success btn-elevate-hover btn-pill"
-                        (click)="savePage()"
-                    >
-                        <i class="fa fa-save"></i>
-                        {{ 'Save' | localize }}
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <add-widget-modal #addWidgetModal *ngIf="dashboardName" (onClose)="addWidget($event)"></add-widget-modal>
+                <circle id="star" r="1.4" fill="white" opacity=".7" />
+            </defs>
 
-    <div
-        appBsModal
-        #filterModal="bs-modal"
-        class="modal fade filterModal"
-        tabindex="-1"
-        role="dialog"
-        aria-hidden="true"
-    >
-        <div class="modal-dialog modal-md">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <span>{{ 'DashboardFilters' | localize }}</span>
-                    </h5>
-                    <button type="button" class="btn-close" (click)="close()" [attr.aria-label]="l('Close')"></button>
-                </div>
-                <div class="modal-body" *ngIf="userDashboard">
-                    <div *ngFor="let filter of userDashboard.filters; let i = index">
-                        <div class="row">
-                            <h6 style="margin-left: 10px">{{ filter.name | localize }}</h6>
-                            <div class="col-md-12">
-                                <ng-container *ngComponentOutlet="filter.component"></ng-container>
-                            </div>
-                        </div>
-                        <hr *ngIf="i != userDashboard.filters.length - 1" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light-primary fw-bold" (click)="close()">
-                        {{ 'Close' | localize }}
-                    </button>
-                </div>
-            </div>
-        </div>
+            <!-- background -->
+            <rect x="0" y="0" width="100%" height="100%" fill="url(#gSky)"></rect>
+
+            <!-- stars -->
+            <g opacity=".6">
+                <use href="#star" x="60" y="40" />
+                <use href="#star" x="120" y="110" />
+                <use href="#star" x="210" y="70" />
+                <use href="#star" x="300" y="150" />
+                <use href="#star" x="410" y="40" />
+                <use href="#star" x="520" y="90" />
+                <use href="#star" x="760" y="40" />
+                <use href="#star" x="830" y="120" />
+                <use href="#star" x="700" y="300" />
+                <use href="#star" x="200" y="300" />
+            </g>
+
+            <!-- Title -->
+            <g transform="translate(60,110)">
+                <text x="0" y="0" class="pttoi-title">Push to Talk</text>
+                <text x="0" y="44" class="pttoi-title-sub">over Internet</text>
+                <rect x="-10" y="64" width="280" height="8" rx="4" class="pttoi-underline" />
+            </g>
+
+            <!-- Tower -->
+            <g transform="translate(180,195)">
+                <rect x="-6" y="-110" width="12" height="120" rx="3" class="tower-pole" />
+                <rect x="-18" y="10" width="36" height="10" rx="5" class="tower-base" />
+                <circle cx="0" cy="-110" r="8" class="tower-head" />
+                <circle cx="0" cy="-110" r="32" fill="url(#gGlow)" class="beacon-pulse" />
+
+                <g class="signal-arcs">
+                    <path d="M15 -110 q45 -20  90 0" class="arc a1" />
+                    <path d="M15 -110 q65 -28 130 0" class="arc a2" />
+                    <path d="M15 -110 q85 -36 170 0" class="arc a3" />
+                </g>
+
+                <!-- ping traveling to Earth -->
+                <path id="beamPath" d="M0 -110 C 140 -160, 380 80, 540 80" fill="none" stroke="none" />
+                <circle r="5" class="ping">
+                    <animateMotion dur="2.8s" repeatCount="indefinite">
+                        <mpath href="#beamPath" />
+                    </animateMotion>
+                </circle>
+            </g>
+
+            <!-- Earth -->
+            <g>
+                <circle cx="640" cy="180" r="120" fill="url(#gGlow)" opacity=".4" />
+                <circle cx="640" cy="180" r="95" class="earth" />
+                <circle cx="620" cy="160" r="95" class="earth-shine" />
+
+                <g clip-path="url(#earth-clip)" class="clouds">
+                    <g class="cloud-band" transform="translate(0,0)">
+                        <rect x="520" y="150" width="260" height="20" rx="10" class="cloud cloud-1" />
+                        <rect x="480" y="185" width="220" height="14" rx="8" class="cloud cloud-2" />
+                        <rect x="560" y="120" width="200" height="12" rx="6" class="cloud cloud-3" />
+                    </g>
+                </g>
+
+                <g clip-path="url(#earth-clip)">
+                    <g class="continents">
+                        <path d="M560,170 c30,-40 70,-30 95,-10 s30,55 -10,70 s-85,0 -85,-30 z" class="land" />
+                        <path d="M650,130 c25,-10 40,0 55,15 s15,25 -10,35 s-55,5 -50,-20 z" class="land" />
+                        <path d="M690,210 c18,-6 28,4 38,10 s10,18 -8,26 s-38,3 -34,-16 z" class="land" />
+                    </g>
+                </g>
+            </g>
+        </svg>
+
+        <!-- INLINE STYLES ONLY -->
+        <style>
+            :host {
+                /* defaults (ma-override nimo via parent [ngStyle] if gusto ka) */
+                --pttoi-accent: #22d3ee;
+                --pttoi-ocean: #0ea5e9;
+                --pttoi-land: #16a34a;
+                --pttoi-text: #e5e7eb;
+                --pttoi-sub: #9ca3af;
+                --pttoi-sky-1: #0f172a;
+                --pttoi-sky-2: #111827;
+
+                display: grid;
+                place-items: center;
+                width: 100%;
+                min-height: 280px;
+                padding: 12px 16px;
+            }
+
+            .pttoi-hero {
+                width: 100%;
+            }
+            /* NEW — bigger + configurable */
+            .pttoi-svg {
+                width: clamp(600px, calc(80vw * var(--pttoi-scale, 1)), 2000px);
+                height: auto;
+            }
+
+            /* optional: mas responsive pa gyud */
+            @media (min-width: 1600px) {
+                .pttoi-svg {
+                    max-width: var(--pttoi-max-xl, 1800px);
+                }
+            }
+
+            .pttoi-title {
+                font:
+                    700 34px/1.05 ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    Segoe UI,
+                    Roboto,
+                    Inter,
+                    Arial;
+                fill: var(--pttoi-text);
+                letter-spacing: 0.4px;
+            }
+            .pttoi-title-sub {
+                font:
+                    600 26px/1.05 ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    Segoe UI,
+                    Roboto,
+                    Inter,
+                    Arial;
+                fill: var(--pttoi-sub);
+            }
+            .pttoi-underline {
+                fill: var(--pttoi-accent);
+                opacity: 0.3;
+                animation: glowline 2.6s ease-in-out infinite;
+            }
+            @keyframes glowline {
+                0%,
+                100% {
+                    opacity: 0.25;
+                }
+                50% {
+                    opacity: 0.8;
+                }
+            }
+
+            /* tower */
+            .tower-pole {
+                fill: #cbd5e1;
+            }
+            .tower-base {
+                fill: #94a3b8;
+            }
+            .tower-head {
+                fill: var(--pttoi-accent);
+            }
+            .beacon-pulse {
+                animation: pulse 2.2s ease-out infinite;
+                transform-origin: center;
+            }
+            @keyframes pulse {
+                0% {
+                    transform: scale(0.4);
+                    opacity: 0.75;
+                }
+                70% {
+                    transform: scale(1);
+                    opacity: 0.05;
+                }
+                100% {
+                    transform: scale(1.1);
+                    opacity: 0;
+                }
+            }
+
+            /* arcs */
+            .signal-arcs .arc {
+                fill: none;
+                stroke: var(--pttoi-accent);
+                stroke-width: 3;
+                stroke-linecap: round;
+                opacity: 0.15;
+            }
+            .signal-arcs .a1 {
+                animation: arcPulse 1.8s ease-in-out infinite;
+            }
+            .signal-arcs .a2 {
+                animation: arcPulse 1.8s 0.15s ease-in-out infinite;
+            }
+            .signal-arcs .a3 {
+                animation: arcPulse 1.8s 0.3s ease-in-out infinite;
+            }
+            @keyframes arcPulse {
+                0%,
+                100% {
+                    opacity: 0.1;
+                }
+                50% {
+                    opacity: 0.8;
+                }
+            }
+
+            /* ping */
+            .ping {
+                fill: var(--pttoi-accent);
+            }
+
+            /* earth */
+            .earth {
+                fill: var(--pttoi-ocean);
+                filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.25));
+            }
+            .earth-shine {
+                fill: white;
+                opacity: 0.05;
+            }
+
+            /* continents + clouds */
+            .continents {
+                fill: var(--pttoi-land);
+                opacity: 0.92;
+                transform-origin: 640px 180px;
+                animation: spin 18s linear infinite;
+            }
+            @keyframes spin {
+                from {
+                    transform: rotate(0);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .cloud {
+                fill: #fff;
+                opacity: 0.18;
+            }
+            .clouds .cloud-band {
+                animation: clouds 22s linear infinite;
+            }
+            @keyframes clouds {
+                from {
+                    transform: translateX(-60px);
+                }
+                to {
+                    transform: translateX(60px);
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .beacon-pulse,
+                .signal-arcs .arc,
+                .ping,
+                .continents,
+                .clouds .cloud-band,
+                .pttoi-underline {
+                    animation: none !important;
+                }
+            }
+        </style>
     </div>
 </div>

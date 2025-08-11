@@ -1,6 +1,6 @@
 import { Component, OnInit, Injector, Inject } from '@angular/core';
 import { TenantDashboardServiceProxy } from '@shared/service-proxies/service-proxies';
-import { WidgetOnResizeEventHandler, WIDGETONRESIZEEVENTHANDLERTOKEN } from '../../customizable-dashboard.component';
+// import { WidgetOnResizeEventHandler, WIDGETONRESIZEEVENTHANDLERTOKEN } from '../../customizable-dashboard.component';
 import { DashboardChartBase } from '../dashboard-chart-base';
 import { WidgetComponentBaseComponent } from '../widget-component-base';
 
@@ -66,15 +66,15 @@ export class WidgetProfitShareComponent extends WidgetComponentBaseComponent imp
     constructor(
         injector: Injector,
         private _dashboardService: TenantDashboardServiceProxy,
-        @Inject(WIDGETONRESIZEEVENTHANDLERTOKEN) private _widgetOnResizeEventHandler: WidgetOnResizeEventHandler
+        // @Inject(WIDGETONRESIZEEVENTHANDLERTOKEN) private _widgetOnResizeEventHandler: WidgetOnResizeEventHandler,
     ) {
         super(injector);
 
         this.profitSharePieChart = new ProfitSharePieChart(this._dashboardService);
 
-        _widgetOnResizeEventHandler.onResize.subscribe(() => {
-            this.profitSharePieChart.reload();
-        });
+        // _widgetOnResizeEventHandler.onResize.subscribe(() => {
+        //     this.profitSharePieChart.reload();
+        // });
     }
 
     ngOnInit() {
