@@ -1,6 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>    <text name="Log">Log</text>
+  <texts>    <text name="isActive">is active</text>
+    <text name="NotisActive">Notis active</text>
+    <text name="PPO">P p o</text>
+    <text name="Business.Solutions.Maintenance.PPO">PPO</text>
+    <text name="ProvincialName">Provincial name</text>
+    <text name="PPOsHeaderInfo">P p os header info</text>
+    <text name="CreateNewPPO">Create new p p o</text>
+    <text name="EditPPO">Edit p p o</text>
+    <text name="DeletePPO">Delete p p o</text>
+    <text name="PPOs">P p os</text>
+    <text name="Log">Log</text>
     <text name="Business.Solutions.Maintenance.Log">Log</text>
     <text name="Activity">Activity</text>
     <text name="LogLevel">Log level</text>

@@ -13,6 +13,7 @@ namespace Business.Solutions.EntityHistory
 
         public static readonly Type[] HostSideTrackedTypes =
         {
+            typeof(PPO),
             typeof(Log),
             typeof(GroupMember),
             typeof(OrganizationUnit), typeof(Role), typeof(Tenant)
@@ -20,6 +21,7 @@ namespace Business.Solutions.EntityHistory
 
         public static readonly Type[] TenantSideTrackedTypes =
         {
+            typeof(PPO),
             typeof(Log),
             typeof(GroupMember),
             typeof(OrganizationUnit), typeof(Role)

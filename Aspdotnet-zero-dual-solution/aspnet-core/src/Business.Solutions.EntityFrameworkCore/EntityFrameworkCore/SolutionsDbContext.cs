@@ -20,6 +20,8 @@ namespace Business.Solutions.EntityFrameworkCore
 {
     public class SolutionsDbContext : AbpZeroDbContext<Tenant, Role, User, SolutionsDbContext>, IOpenIddictDbContext
     {
+        public virtual DbSet<PPO> PPOs { get; set; }
+
         public virtual DbSet<Log> Logs { get; set; }
 
         public virtual DbSet<Notification> Notifications { get; set; }
@@ -72,10 +74,14 @@ namespace Business.Solutions.EntityFrameworkCore
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Log>(l =>
+            modelBuilder.Entity<PPO>(p =>
             {
-                l.HasIndex(e => new { e.TenantId });
+                p.HasIndex(e => new { e.TenantId });
             });
+            modelBuilder.Entity<Log>(l =>
+                       {
+                           l.HasIndex(e => new { e.TenantId });
+                       });
             modelBuilder.Entity<Notification>(n =>
                        {
                            n.HasIndex(e => new { e.TenantId });

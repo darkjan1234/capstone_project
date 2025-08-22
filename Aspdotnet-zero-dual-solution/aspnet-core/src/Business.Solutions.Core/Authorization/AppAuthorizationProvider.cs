@@ -30,6 +30,11 @@ namespace Business.Solutions.Authorization
 
             var pages = context.GetPermissionOrNull(AppPermissions.Pages) ?? context.CreatePermission(AppPermissions.Pages, L("Pages"));
 
+            var ppOs = pages.CreateChildPermission(AppPermissions.Pages_PPOs, L("PPOs"));
+            ppOs.CreateChildPermission(AppPermissions.Pages_PPOs_Create, L("CreateNewPPO"));
+            ppOs.CreateChildPermission(AppPermissions.Pages_PPOs_Edit, L("EditPPO"));
+            ppOs.CreateChildPermission(AppPermissions.Pages_PPOs_Delete, L("DeletePPO"));
+
             var logs = pages.CreateChildPermission(AppPermissions.Pages_Logs, L("Logs"));
             logs.CreateChildPermission(AppPermissions.Pages_Logs_Create, L("CreateNewLog"));
             logs.CreateChildPermission(AppPermissions.Pages_Logs_Edit, L("EditLog"));

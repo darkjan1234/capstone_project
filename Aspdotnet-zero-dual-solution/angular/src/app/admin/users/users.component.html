@@ -111,7 +111,7 @@
                             <div
                                 [ngClass]="{
                                     'col-md-6': ('Pages.Administration.Roles' | permission),
-                                    'col-md-12': !('Pages.Administration.Roles' | permission)
+                                    'col-md-12': !('Pages.Administration.Roles' | permission),
                                 }"
                             >
                                 <div class="mb-5">
@@ -190,7 +190,7 @@
                             [scrollable]="true"
                             ScrollWidth="100%"
                             scrollDirection="horizontal"
-                            [tableStyle]="{'min-width': '50rem'}"
+                            [tableStyle]="{ 'min-width': '50rem' }"
                             [resizableColumns]="primengTableHelper.resizableColumns"
                         >
                             <ng-template pTemplate="header">
@@ -203,7 +203,7 @@
                                                     'Pages.Administration.Users.Impersonation',
                                                     'Pages.Administration.Users.Edit',
                                                     'Pages.Administration.Users.ChangePermissions',
-                                                    'Pages.Administration.Users.Delete'
+                                                    'Pages.Administration.Users.Delete',
                                                 ] | permissionAny
                                             )
                                         "
@@ -222,9 +222,9 @@
                                         {{ 'Surname' | localize }}
                                         <p-sortIcon field="surname"></p-sortIcon>
                                     </th>
-                                    <th style="min-width: 150px">
+                                    <!-- <th style="min-width: 150px">
                                         {{ 'Roles' | localize }}
-                                    </th>
+                                    </th> -->
                                     <th style="min-width: 250px" pSortableColumn="emailAddress">
                                         {{ 'EmailAddress' | localize }}
                                         <p-sortIcon field="emailAddress"></p-sortIcon>
@@ -246,14 +246,14 @@
                             <ng-template pTemplate="body" let-record="$implicit">
                                 <tr>
                                     <td
-                                        style="min-width: 130px"
+                                        style="min-width: 1px"
                                         [hidden]="
                                             !(
                                                 [
                                                     'Pages.Administration.Users.Impersonation',
                                                     'Pages.Administration.Users.Edit',
                                                     'Pages.Administration.Users.ChangePermissions',
-                                                    'Pages.Administration.Users.Delete'
+                                                    'Pages.Administration.Users.Delete',
                                                 ] | permissionAny
                                             )
                                         "
@@ -389,10 +389,10 @@
                                         <span class="p-column-title">{{ 'Surname' | localize }}</span>
                                         {{ record.surname }}
                                     </td>
-                                    <td style="min-width: 150px">
+                                    <!-- <td style="min-width: 150px">
                                         <span class="p-column-title">{{ 'Roles' | localize }}</span>
                                         {{ getRolesAsString(record.roles) }}
-                                    </td>
+                                    </td> -->
                                     <td style="min-width: 250px">
                                         <span class="p-column-title">{{ 'EmailAddress' | localize }}</span>
                                         {{ record.emailAddress }}

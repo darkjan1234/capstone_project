@@ -51,6 +51,8 @@ namespace Business.Solutions
     {
         public static void CreateMappings(IMapperConfigurationExpression configuration)
         {
+            configuration.CreateMap<CreateOrEditPPODto, PPO>().ReverseMap();
+            configuration.CreateMap<PPODto, PPO>().ReverseMap();
             configuration.CreateMap<CreateOrEditLogDto, Log>().ReverseMap();
             configuration.CreateMap<LogDto, Log>().ReverseMap();
             configuration.CreateMap<CreateOrEditNotificationDto, Notification>().ReverseMap();

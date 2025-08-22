@@ -7,6 +7,13 @@ import { RouterModule } from '@angular/router';
             {
                 path: '',
                 children: [
+                    
+                    {
+                        path: 'maintenance/ppOs',
+                        loadChildren: () => import('./maintenance/ppOs/ppo.module').then(m => m.PPOModule),
+                        data: { permission: 'Pages.PPOs' }
+                    },
+                
                     {
                         path: 'maintenance/logs',
                         loadChildren: () => import('./maintenance/logs/log.module').then((m) => m.LogModule),

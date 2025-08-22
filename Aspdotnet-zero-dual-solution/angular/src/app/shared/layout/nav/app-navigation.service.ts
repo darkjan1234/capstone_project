@@ -27,13 +27,6 @@ export class AppNavigationService {
 
             new AppMenuItem('Groups', 'Pages.Groups', 'flaticon-more', '/app/main/maintenance/groups'),
 
-            new AppMenuItem(
-                'GroupMembers',
-                'Pages.GroupMembers',
-                'flaticon-more',
-                '/app/main/maintenance/groupMembers',
-            ),
-
             new AppMenuItem('PTTMessages', 'Pages.PTTMessages', 'flaticon-more', '/app/main/maintenance/pttMessages'),
 
             new AppMenuItem(
@@ -49,11 +42,30 @@ export class AppNavigationService {
                 'flaticon-more',
                 '/app/main/maintenance/notifications',
             ),
-
-            new AppMenuItem('Logs', 'Pages.Logs', 'flaticon-more', '/app/main/maintenance/logs'),
+            new AppMenuItem(
+                'Registration',
+                '',
+                'flaticon-users',
+                '',
+                [],
+                [
+                    new AppMenuItem('Users', 'Pages.Administration.Users', 'flaticon-users', '/app/admin/users'),
+                    // new AppMenuItem('Roles', 'Pages.Administration.Roles', 'flaticon-suitcase', '/app/admin/roles'),
+                    new AppMenuItem('Admin', 'Pages.Administration.Users', 'flaticon-users', '/app/admin/admin'),
+                ],
+            ),
+            // new AppMenuItem('Logs', 'Pages.Logs', 'flaticon-more', '/app/main/maintenance/logs'),
+            //
+            new AppMenuItem('PPOs', 'Pages.PPOs', 'flaticon-more', '/app/main/maintenance/ppOs'),
             new AppMenuItem('Editions', 'Pages.Editions', 'flaticon-app', '/app/admin/editions'),
             new AppMenuItem(
-                'Administration',
+                'GroupMembers',
+                'Pages.GroupMembers',
+                'flaticon-more',
+                '/app/main/maintenance/groupMembers',
+            ),
+            new AppMenuItem(
+                'Settings',
                 '',
                 'flaticon-interface-8',
                 '',
@@ -65,8 +77,8 @@ export class AppNavigationService {
                         'flaticon-map',
                         '/app/admin/organization-units',
                     ),
-                    new AppMenuItem('Roles', 'Pages.Administration.Roles', 'flaticon-suitcase', '/app/admin/roles'),
-                    new AppMenuItem('Users', 'Pages.Administration.Users', 'flaticon-users', '/app/admin/users'),
+                    // new AppMenuItem('Roles', 'Pages.Administration.Roles', 'flaticon-suitcase', '/app/admin/roles'),
+                    // new AppMenuItem('Users', 'Pages.Administration.Users', 'flaticon-users', '/app/admin/users'),
                     new AppMenuItem(
                         'Languages',
                         'Pages.Administration.Languages',
@@ -140,12 +152,12 @@ export class AppNavigationService {
                     ),
                 ],
             ),
-            new AppMenuItem(
-                'DemoUiComponents',
-                'Pages.DemoUiComponents',
-                'flaticon-shapes',
-                '/app/admin/demo-ui-components',
-            ),
+            // new AppMenuItem(
+            //     'DemoUiComponents',
+            //     'Pages.DemoUiComponents',
+            //     'flaticon-shapes',
+            //     '/app/admin/demo-ui-components',
+            // ),
         ]);
     }
 
