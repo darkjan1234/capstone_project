@@ -3,7 +3,22 @@ import 'api_service.dart';
 import 'login_screen.dart';
 
 void main() {
-  runApp(MaterialApp(home: LoginScreen()));
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'RCEU12 PTT System',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        fontFamily: 'Arial',
+      ),
+      home: LoginScreen(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 
 class UserLoginAttemptsScreen extends StatefulWidget {

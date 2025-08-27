@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'ptt_screen.dart';
+import 'ptt_main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -109,9 +109,10 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (_) => PttScreen(
+              builder: (_) => PttMainScreen(
                 token: token,
                 serverUrl: 'http://$serverIP:44311',
+                userId: usernameController.text,
               ),
             ),
           );
