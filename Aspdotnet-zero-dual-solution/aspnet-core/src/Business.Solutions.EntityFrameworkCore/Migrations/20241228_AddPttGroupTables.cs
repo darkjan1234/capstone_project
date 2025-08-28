@@ -3,7 +3,7 @@ using System;
 
 namespace Business.Solutions.Migrations
 {
-    public partial class AddPttGroupTables : Migration
+    public partial class AddPttGroupTablesFixed : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -75,7 +75,7 @@ namespace Business.Solutions.Migrations
                         column: x => x.PttGroupId,
                         principalTable: "PttGroups",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PttGroupMembers_AbpUsers_UserId",
                         column: x => x.UserId,

@@ -111,6 +111,43 @@ namespace Business.Solutions.EntityFrameworkCore
                        {
                            p.HasIndex(e => new { e.TenantId });
                        });
+
+            // PTT Group configurations
+            modelBuilder.Entity<PttGroup>(p =>
+            {
+                p.HasOne(x => x.CreatedByAdmin)
+                    .WithMany()
+                    .HasForeignKey(x => x.CreatedByAdminId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                p.HasOne(x => x.ParentGroup)
+                    .WithMany(x => x.ChildGroups)
+                    .HasForeignKey(x => x.ParentGroupId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<PttGroupMember>(p =>
+            {
+                p.HasOne(x => x.PttGroup)
+                    .WithMany(x => x.Members)
+                    .HasForeignKey(x => x.PttGroupId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                p.HasOne(x => x.User)
+                    .WithMany()
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                p.HasOne(x => x.AddedByAdmin)
+                    .WithMany()
+                    .HasForeignKey(x => x.AddedByAdminId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Unique constraint to prevent duplicate memberships
+                p.HasIndex(x => new { x.PttGroupId, x.UserId })
+                    .IsUnique()
+                    .HasFilter("[IsDeleted] = 0");
+            });
             modelBuilder.Entity<BinaryObject>(b =>
                        {
                            b.HasIndex(e => new { e.TenantId });

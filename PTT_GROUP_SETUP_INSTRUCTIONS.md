@@ -42,8 +42,33 @@
 
 ### **🎯 Quick Setup (Windows)**
 ```bash
-# Run the automated setup script
+# If you encountered the cascade delete error, run this first:
+fix_migration.bat
+
+# Then run the automated setup script:
 setup_ptt_groups.bat
+```
+
+### **🚨 Database Migration Fix**
+If you get the cascade delete error, you have 3 options:
+
+**Option 1: Run the fix script**
+```bash
+fix_migration.bat
+```
+
+**Option 2: Manual SQL script**
+```sql
+-- Run create_ptt_tables.sql in SQL Server Management Studio
+-- This creates tables with proper constraints
+```
+
+**Option 3: Manual EF commands**
+```bash
+cd Aspdotnet-zero-dual-solution/aspnet-core
+dotnet ef migrations remove -p src/Business.Solutions.EntityFrameworkCore -s src/Business.Solutions.Web.Host --force
+dotnet ef migrations add AddPttGroupTablesFixed -p src/Business.Solutions.EntityFrameworkCore -s src/Business.Solutions.Web.Host
+dotnet ef database update -p src/Business.Solutions.EntityFrameworkCore -s src/Business.Solutions.Web.Host
 ```
 
 ### **1. Backend Setup**
@@ -196,11 +221,13 @@ POST /api/services/app/PttGroup/RemoveUserFromGroup
 ## **🐛 Troubleshooting:**
 
 ### **Common Issues:**
-1. **Migration fails:** Check connection string in appsettings.json
-2. **Angular build errors:** Run `npm install` and check service proxy imports
-3. **Flutter API errors:** Verify server URL and token
-4. **Permission denied:** Check user roles and permissions
-5. **Compilation errors:** Ensure all using statements are correct
+1. **Cascade delete error:** Run `fix_migration.bat` or use the manual SQL script
+2. **Migration fails:** Check connection string in appsettings.json
+3. **Angular build errors:** Run `npm install` and check service proxy imports
+4. **Flutter API errors:** Verify server URL and token
+5. **Permission denied:** Check user roles and permissions
+6. **Compilation errors:** Ensure all using statements are correct
+7. **Foreign key constraint errors:** Use `create_ptt_tables.sql` for manual table creation
 
 ### **Debug Tips:**
 - Check browser console for Angular errors
