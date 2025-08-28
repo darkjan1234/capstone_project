@@ -87,13 +87,13 @@ namespace Business.Solutions.PTT
         /// </summary>
         public bool CanUserAccess(User user)
         {
-            // Super Admin can access all groups
-            if (user.IsInRole("Admin"))
+            // Super Admin can access all groups (check by PttRole when available)
+            if (user.UserName == "admin")
                 return true;
 
             // Users can only access groups in their region
-            // We'll need to add RegionCode to User entity too
-            return true; // Placeholder for now
+            // This will work properly after database migration adds RegionCode
+            return true; // Placeholder for now - will be implemented after DB update
         }
 
         public PttGroup()
@@ -103,7 +103,7 @@ namespace Business.Solutions.PTT
             IsActive = true;
         }
 
-        public PttGroup(string name, long createdByAdminId, PttGroupType groupType = PttGroupType.User)
+        public PttGroup(string name, long createdByAdminId, PttGroupType groupType = PttGroupType.Field_Team)
             : this()
         {
             Name = name;
