@@ -12,7 +12,7 @@ import {
 @Component({
     selector: 'createOrEditPttGroupModal',
     templateUrl: './create-or-edit-ptt-group-modal.component.html',
-    styleUrls: ['./create-or-edit-ptt-group-modal.component.less']
+    styleUrls: ['./create-or-edit-ptt-group-modal.component.css']
 })
 export class CreateOrEditPttGroupModalComponent extends AppComponentBase implements OnInit {
 

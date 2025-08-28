@@ -2,23 +2,26 @@ import { Component, Injector, ViewChild, OnInit } from '@angular/core';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { PttGroupServiceProxy, PttGroupListDto, PttGroupHierarchyDto, GetPttGroupsInput, PttGroupType } from '@shared/service-proxies/ptt-group-service-proxy';
-import { PagedListingComponentBase, PagedRequestDto } from '@shared/common/paged-listing-component-base';
+// import { PagedListingComponentBase, PagedRequestDto } from '@shared/common/paged-listing-component-base';
 import { CreateOrEditPttGroupModalComponent } from './create-or-edit-ptt-group-modal.component';
 import { GroupMembersModalComponent } from './group-members-modal.component';
 import { finalize } from 'rxjs/operators';
 
-class PagedPttGroupsRequestDto extends PagedRequestDto {
+class PagedPttGroupsRequestDto {
     keyword: string;
     groupType: PttGroupType | undefined;
     isActive: boolean | undefined;
+    maxResultCount: number = 10;
+    skipCount: number = 0;
+    sorting?: string;
 }
 
 @Component({
     templateUrl: './ptt-groups.component.html',
-    styleUrls: ['./ptt-groups.component.less'],
+    styleUrls: ['./ptt-groups.component.css'],
     animations: [appModuleAnimation()]
 })
-export class PttGroupsComponent extends PagedListingComponentBase<PttGroupListDto> implements OnInit {
+export class PttGroupsComponent extends AppComponentBase implements OnInit {
 
     @ViewChild('createOrEditPttGroupModal', { static: true }) createOrEditPttGroupModal: CreateOrEditPttGroupModalComponent;
     @ViewChild('groupMembersModal', { static: true }) groupMembersModal: GroupMembersModalComponent;
@@ -28,7 +31,9 @@ export class PttGroupsComponent extends PagedListingComponentBase<PttGroupListDt
     filterText = '';
     selectedGroupType: string = '';
     selectedActiveStatus: string = '';
-    
+    request: PagedPttGroupsRequestDto = new PagedPttGroupsRequestDto();
+    loading = false;
+
     // Enum references for template
     pttGroupType = PttGroupType;
 
@@ -44,29 +49,45 @@ export class PttGroupsComponent extends PagedListingComponentBase<PttGroupListDt
         this.getGroupHierarchy();
     }
 
-    protected list(
-        request: PagedPttGroupsRequestDto,
-        pageNumber: number,
-        finishedCallback: Function
-    ): void {
-        request.keyword = this.filterText;
-        request.groupType = this.selectedGroupType ? parseInt(this.selectedGroupType) : undefined;
-        request.isActive = this.selectedActiveStatus ? this.selectedActiveStatus === 'true' : undefined;
+    getPttGroups(pageNumber?: number): void {
+        this.loading = true;
+        this.request.skipCount = pageNumber ? (pageNumber - 1) * this.request.maxResultCount : 0;
+        this.request.keyword = this.filterText;
+        this.request.groupType = this.selectedGroupType ? parseInt(this.selectedGroupType) : undefined;
+        this.request.isActive = this.selectedActiveStatus ? this.selectedActiveStatus === 'true' : undefined;
 
         this._pttGroupService
-            .getPttGroups(request)
+            .getPttGroups({
+                filter: this.request.keyword,
+                groupType: this.request.groupType,
+                isActive: this.request.isActive,
+                maxResultCount: this.request.maxResultCount,
+                skipCount: this.request.skipCount,
+                sorting: this.request.sorting
+            })
             .pipe(
                 finalize(() => {
-                    finishedCallback();
+                    this.loading = false;
                 })
             )
             .subscribe((result) => {
                 this.pttGroups = result;
-                this.showPaging(result, pageNumber);
             });
     }
 
-    protected delete(pttGroup: PttGroupListDto): void {
+    refresh(): void {
+        this.getPttGroups();
+    }
+
+    showPaging(result: any, pageNumber: number): void {
+        // This method is for compatibility with pagination
+    }
+
+    getDataPage(pageNumber: number): void {
+        this.getPttGroups(pageNumber);
+    }
+
+    delete(pttGroup: PttGroupListDto): void {
         abp.message.confirm(
             this.l('PttGroupDeleteWarningMessage', pttGroup.name),
             undefined,

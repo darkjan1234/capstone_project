@@ -150,7 +150,7 @@
                                         </td>
                                         <td>
                                             <span class="text-muted font-weight-bold">
-                                                {{ group.creationTime | momentFormat: 'L' }}
+                                                {{ group.creationTime | date: 'short' }}
                                             </span>
                                         </td>
                                         <td>
@@ -198,10 +198,19 @@
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-8">
-                                <abp-pagination-controls id="PttGroupsTable"
-                                                       (pageChange)="getPttGroups($event)"
-                                                       [responsive]="true">
-                                </abp-pagination-controls>
+                                <!-- Simple pagination buttons -->
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-secondary"
+                                            (click)="getPttGroups(1)"
+                                            [disabled]="request.skipCount === 0">
+                                        Previous
+                                    </button>
+                                    <button type="button" class="btn btn-secondary"
+                                            (click)="getPttGroups(Math.ceil((request.skipCount + request.maxResultCount) / request.maxResultCount) + 1)"
+                                            [disabled]="pttGroups.items.length < request.maxResultCount">
+                                        Next
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

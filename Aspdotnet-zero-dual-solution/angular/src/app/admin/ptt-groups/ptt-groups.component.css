@@ -1,0 +1,198 @@
+/* PTT Groups Component Styles */
+.ptt-groups-container {
+    padding: 20px;
+}
+
+.filters-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.hierarchy-section {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.hierarchy-tree {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.group-node {
+    padding: 8px;
+    margin: 2px 0;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.group-node:hover {
+    background-color: #f8f9fa;
+}
+
+.group-node.active {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196f3;
+}
+
+.group-level-0 {
+    font-weight: bold;
+    color: #1976d2;
+}
+
+.group-level-1 {
+    margin-left: 20px;
+    color: #388e3c;
+}
+
+.group-level-2 {
+    margin-left: 40px;
+    color: #f57c00;
+}
+
+.group-level-3 {
+    margin-left: 60px;
+    color: #7b1fa2;
+}
+
+.group-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.group-details {
+    flex: 1;
+}
+
+.group-status {
+    font-size: 0.8em;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 10px;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.groups-table {
+    background: white;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table-responsive {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.group-type-badge {
+    font-size: 0.8em;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.type-admin {
+    background-color: #dc3545;
+    color: white;
+}
+
+.type-user {
+    background-color: #28a745;
+    color: white;
+}
+
+.type-mixed {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.member-count {
+    background-color: #6c757d;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.8em;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.loading-overlay {
+    position: relative;
+}
+
+.loading-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.pagination-info {
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.advanced-filters {
+    border-top: 1px solid #dee2e6;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.filter-row {
+    margin-bottom: 10px;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.no-data i {
+    font-size: 3em;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}

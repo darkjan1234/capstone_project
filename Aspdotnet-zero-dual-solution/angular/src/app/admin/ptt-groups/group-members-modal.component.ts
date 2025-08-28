@@ -23,7 +23,7 @@ class PagedGroupMembersRequestDto extends PagedRequestDto {
 @Component({
     selector: 'groupMembersModal',
     templateUrl: './group-members-modal.component.html',
-    styleUrls: ['./group-members-modal.component.less']
+    styleUrls: ['./group-members-modal.component.css']
 })
 export class GroupMembersModalComponent extends AppComponentBase implements OnInit {
 

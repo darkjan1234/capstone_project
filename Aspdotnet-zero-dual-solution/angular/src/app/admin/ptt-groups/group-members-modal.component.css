@@ -1,0 +1,70 @@
+/* Group Members Modal Styles */
+.group-members-modal {
+    .modal-dialog {
+        max-width: 800px;
+    }
+}
+
+.member-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.member-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.member-item:last-child {
+    border-bottom: none;
+}
+
+.member-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.member-details {
+    flex: 1;
+}
+
+.member-actions {
+    margin-left: 10px;
+}
+
+.role-badge {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.role-admin {
+    background-color: #dc3545;
+    color: white;
+}
+
+.role-user {
+    background-color: #28a745;
+    color: white;
+}
+
+.role-superadmin {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.add-member-section {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.user-select {
+    margin-bottom: 10px;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 20px;
+}
