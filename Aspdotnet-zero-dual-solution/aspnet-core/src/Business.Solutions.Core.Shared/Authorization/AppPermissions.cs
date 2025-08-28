@@ -46,6 +46,12 @@
         public const string Pages_PttUsers_Edit = "Pages.PttUsers.Edit";
         public const string Pages_PttUsers_Delete = "Pages.PttUsers.Delete";
 
+        public const string Pages_PttGroups = "Pages.PttGroups";
+        public const string Pages_PttGroups_Create = "Pages.PttGroups.Create";
+        public const string Pages_PttGroups_Edit = "Pages.PttGroups.Edit";
+        public const string Pages_PttGroups_Delete = "Pages.PttGroups.Delete";
+        public const string Pages_PttGroups_ManageMembers = "Pages.PttGroups.ManageMembers";
+
         //COMMON PERMISSIONS (FOR BOTH OF TENANTS AND HOST)
 
         public const string Pages = "Pages";

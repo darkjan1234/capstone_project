@@ -6,6 +6,8 @@ using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
+using Abp.Runtime.Session;
+using Abp;
 using Business.Solutions.Authorization;
 using Business.Solutions.Authorization.Users;
 using Business.Solutions.PTT.Dto;
@@ -16,7 +18,7 @@ using Abp.UI;
 
 namespace Business.Solutions.PTT
 {
-    [AbpAuthorize(PermissionNames.Pages_Administration_Users)]
+    [AbpAuthorize(AppPermissions.Pages_Administration_Users)]
     public class PttGroupAppService : SolutionsAppServiceBase, IPttGroupAppService
     {
         private readonly IRepository<PttGroup, long> _pttGroupRepository;
@@ -35,7 +37,7 @@ namespace Business.Solutions.PTT
 
         public async Task<PagedResultDto<PttGroupListDto>> GetPttGroups(GetPttGroupsInput input)
         {
-            var currentUserId = AbpSession.GetUserId();
+            var currentUserId = AbpSession.UserId ?? 0;
             
             var query = _pttGroupRepository.GetAll()
                 .Include(g => g.CreatedByAdmin)
@@ -79,7 +81,7 @@ namespace Business.Solutions.PTT
             var group = await _pttGroupRepository.GetAsync(input.Id);
             
             // Check if current user can edit this group
-            if (group.CreatedByAdminId != AbpSession.GetUserId() && !IsUserSuperAdmin())
+            if (group.CreatedByAdminId != (AbpSession.UserId ?? 0) && !IsUserSuperAdmin())
             {
                 throw new UserFriendlyException("You can only edit groups you created.");
             }
@@ -106,7 +108,7 @@ namespace Business.Solutions.PTT
 
         private async Task CreatePttGroup(CreateOrEditPttGroupDto input)
         {
-            var currentUserId = AbpSession.GetUserId();
+            var currentUserId = AbpSession.UserId ?? 0;
             
             // Validate parent group if specified
             if (input.ParentGroupId.HasValue)
@@ -130,7 +132,7 @@ namespace Business.Solutions.PTT
             var group = await _pttGroupRepository.GetAsync(input.Id.Value);
             
             // Check permissions
-            if (group.CreatedByAdminId != AbpSession.GetUserId() && !IsUserSuperAdmin())
+            if (group.CreatedByAdminId != (AbpSession.UserId ?? 0) && !IsUserSuperAdmin())
             {
                 throw new UserFriendlyException("You can only edit groups you created.");
             }
@@ -146,7 +148,7 @@ namespace Business.Solutions.PTT
             var group = await _pttGroupRepository.GetAsync(input.Id);
             
             // Check permissions
-            if (group.CreatedByAdminId != AbpSession.GetUserId() && !IsUserSuperAdmin())
+            if (group.CreatedByAdminId != (AbpSession.UserId ?? 0) && !IsUserSuperAdmin())
             {
                 throw new UserFriendlyException("You can only delete groups you created.");
             }
@@ -173,7 +175,7 @@ namespace Business.Solutions.PTT
             var group = await _pttGroupRepository.GetAsync(input.GroupId);
             
             // Check permissions
-            if (group.CreatedByAdminId != AbpSession.GetUserId() && !IsUserSuperAdmin())
+            if (group.CreatedByAdminId != (AbpSession.UserId ?? 0) && !IsUserSuperAdmin())
             {
                 throw new UserFriendlyException("You can only view members of groups you created.");
             }
@@ -221,7 +223,7 @@ namespace Business.Solutions.PTT
             var group = await _pttGroupRepository.GetAsync(input.GroupId);
             
             // Check permissions
-            if (group.CreatedByAdminId != AbpSession.GetUserId() && !IsUserSuperAdmin())
+            if (group.CreatedByAdminId != (AbpSession.UserId ?? 0) && !IsUserSuperAdmin())
             {
                 throw new UserFriendlyException("You can only add users to groups you created.");
             }
@@ -242,13 +244,13 @@ namespace Business.Solutions.PTT
                     existingMember.IsActive = true;
                     existingMember.Role = input.Role;
                     existingMember.JoinedDate = DateTime.UtcNow;
-                    existingMember.AddedByAdminId = AbpSession.GetUserId();
+                    existingMember.AddedByAdminId = AbpSession.UserId ?? 0;
                     await _pttGroupMemberRepository.UpdateAsync(existingMember);
                 }
             }
             else
             {
-                var member = new PttGroupMember(input.GroupId, input.UserId, input.Role, AbpSession.GetUserId());
+                var member = new PttGroupMember(input.GroupId, input.UserId, input.Role, AbpSession.UserId ?? 0);
                 await _pttGroupMemberRepository.InsertAsync(member);
             }
         }
@@ -258,7 +260,7 @@ namespace Business.Solutions.PTT
             var group = await _pttGroupRepository.GetAsync(input.GroupId);
             
             // Check permissions
-            if (group.CreatedByAdminId != AbpSession.GetUserId() && !IsUserSuperAdmin())
+            if (group.CreatedByAdminId != (AbpSession.UserId ?? 0) && !IsUserSuperAdmin())
             {
                 throw new UserFriendlyException("You can only remove users from groups you created.");
             }
@@ -274,7 +276,7 @@ namespace Business.Solutions.PTT
 
         public async Task<ListResultDto<PttGroupHierarchyDto>> GetGroupHierarchy()
         {
-            var currentUserId = AbpSession.GetUserId();
+            var currentUserId = AbpSession.UserId ?? 0;
             
             var groups = await _pttGroupRepository.GetAll()
                 .Include(g => g.CreatedByAdmin)
@@ -290,7 +292,7 @@ namespace Business.Solutions.PTT
 
         public async Task<ListResultDto<PttGroupListDto>> GetMyGroups()
         {
-            var currentUserId = AbpSession.GetUserId();
+            var currentUserId = AbpSession.UserId ?? 0;
             
             var groups = await _pttGroupRepository.GetAll()
                 .Include(g => g.CreatedByAdmin)

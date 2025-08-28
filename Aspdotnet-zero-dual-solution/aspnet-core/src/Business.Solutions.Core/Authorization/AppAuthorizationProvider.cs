@@ -70,6 +70,12 @@ namespace Business.Solutions.Authorization
             pttUsers.CreateChildPermission(AppPermissions.Pages_PttUsers_Edit, L("EditPttUser"));
             pttUsers.CreateChildPermission(AppPermissions.Pages_PttUsers_Delete, L("DeletePttUser"));
 
+            var pttGroups = pages.CreateChildPermission(AppPermissions.Pages_PttGroups, L("PttGroups"));
+            pttGroups.CreateChildPermission(AppPermissions.Pages_PttGroups_Create, L("CreateNewPttGroup"));
+            pttGroups.CreateChildPermission(AppPermissions.Pages_PttGroups_Edit, L("EditPttGroup"));
+            pttGroups.CreateChildPermission(AppPermissions.Pages_PttGroups_Delete, L("DeletePttGroup"));
+            pttGroups.CreateChildPermission(AppPermissions.Pages_PttGroups_ManageMembers, L("ManagePttGroupMembers"));
+
             pages.CreateChildPermission(AppPermissions.Pages_DemoUiComponents, L("DemoUiComponents"));
 
             var administration = pages.CreateChildPermission(AppPermissions.Pages_Administration, L("Administration"));

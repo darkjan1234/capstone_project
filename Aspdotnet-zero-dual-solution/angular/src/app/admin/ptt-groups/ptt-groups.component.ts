@@ -1,7 +1,7 @@
 import { Component, Injector, ViewChild, OnInit } from '@angular/core';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import { PttGroupServiceProxy, PttGroupListDto, PttGroupHierarchyDto, GetPttGroupsInput, PttGroupType } from '@shared/service-proxies/service-proxies';
+import { PttGroupServiceProxy, PttGroupListDto, PttGroupHierarchyDto, GetPttGroupsInput, PttGroupType } from '@shared/service-proxies/ptt-group-service-proxy';
 import { PagedListingComponentBase, PagedRequestDto } from '@shared/common/paged-listing-component-base';
 import { CreateOrEditPttGroupModalComponent } from './create-or-edit-ptt-group-modal.component';
 import { GroupMembersModalComponent } from './group-members-modal.component';

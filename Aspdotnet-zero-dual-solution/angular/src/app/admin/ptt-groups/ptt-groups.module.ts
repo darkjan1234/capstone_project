@@ -14,6 +14,7 @@ import { PttGroupsRoutingModule } from './ptt-groups-routing.module';
 import { PttGroupsComponent } from './ptt-groups.component';
 import { CreateOrEditPttGroupModalComponent } from './create-or-edit-ptt-group-modal.component';
 import { GroupMembersModalComponent } from './group-members-modal.component';
+import { PttGroupServiceProxy } from '@shared/service-proxies/ptt-group-service-proxy';
 
 @NgModule({
     declarations: [
@@ -33,6 +34,9 @@ import { GroupMembersModalComponent } from './group-members-modal.component';
         AppSharedModule,
         AdminSharedModule,
         PttGroupsRoutingModule
+    ],
+    providers: [
+        PttGroupServiceProxy
     ]
 })
 export class PttGroupsModule { }

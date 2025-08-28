@@ -7,7 +7,7 @@ import {
     CreateOrEditPttGroupDto,
     PttGroupListDto,
     PttGroupType
-} from '@shared/service-proxies/service-proxies';
+} from '@shared/service-proxies/ptt-group-service-proxy';
 
 @Component({
     selector: 'createOrEditPttGroupModal',

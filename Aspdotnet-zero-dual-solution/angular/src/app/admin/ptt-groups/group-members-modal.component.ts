@@ -11,7 +11,7 @@ import {
     RemoveUserFromGroupInput,
     UserListDto,
     PttGroupRole
-} from '@shared/service-proxies/service-proxies';
+} from '@shared/service-proxies/ptt-group-service-proxy';
 
 class PagedGroupMembersRequestDto extends PagedRequestDto {
     groupId: number;
