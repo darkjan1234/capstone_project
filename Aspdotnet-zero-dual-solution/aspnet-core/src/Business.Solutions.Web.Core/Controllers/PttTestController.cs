@@ -27,26 +27,23 @@ namespace Business.Solutions.Web.Controllers
         }
 
         /// <summary>
-        /// Test endpoint to check if regional columns exist
+        /// Test endpoint to check basic database access
         /// </summary>
         [HttpGet("check-database")]
         public async Task<IActionResult> CheckDatabase()
         {
             try
             {
-                // Try to access RegionCode and PttRole properties
                 var users = await _userRepository.GetAllListAsync();
                 var groups = await _pttGroupRepository.GetAllListAsync();
 
                 var result = new
                 {
                     Success = true,
-                    Message = "Database columns exist and are accessible",
+                    Message = "Database is accessible",
                     UserCount = users.Count,
                     GroupCount = groups.Count,
-                    UsersWithRegion = users.Count(u => !string.IsNullOrEmpty(u.RegionCode)),
-                    UsersWithPttRole = users.Count(u => !string.IsNullOrEmpty(u.PttRole)),
-                    GroupsWithRegion = groups.Count(g => !string.IsNullOrEmpty(g.RegionCode))
+                    Note = "RegionCode and PttRole properties will be available after database migration"
                 };
 
                 return Ok(result);
@@ -63,7 +60,7 @@ namespace Business.Solutions.Web.Controllers
         }
 
         /// <summary>
-        /// Get current user's PTT info
+        /// Get current user's basic info
         /// </summary>
         [HttpGet("current-user-info")]
         public async Task<IActionResult> GetCurrentUserInfo()
@@ -82,10 +79,9 @@ namespace Business.Solutions.Web.Controllers
                     UserId = currentUser.Id,
                     UserName = currentUser.UserName,
                     Name = currentUser.Name,
-                    RegionCode = currentUser.RegionCode ?? "No Region",
-                    PttRole = currentUser.PttRole ?? "No PTT Role",
-                    UserType = GetUserType(currentUser),
-                    CanAccessAllRegions = string.IsNullOrEmpty(currentUser.RegionCode)
+                    EmailAddress = currentUser.EmailAddress,
+                    IsActive = currentUser.IsActive,
+                    Note = "RegionCode and PttRole will be available after database migration"
                 };
 
                 return Ok(result);
@@ -102,7 +98,7 @@ namespace Business.Solutions.Web.Controllers
         }
 
         /// <summary>
-        /// Get groups accessible to current user
+        /// Get all groups (temporary - before regional security)
         /// </summary>
         [HttpGet("accessible-groups")]
         public async Task<IActionResult> GetAccessibleGroups()
@@ -117,59 +113,23 @@ namespace Business.Solutions.Web.Controllers
                 var currentUser = await _userRepository.GetAsync(AbpSession.UserId.Value);
                 var allGroups = await _pttGroupRepository.GetAllListAsync();
 
-                List<object> accessibleGroups;
-
-                // Super Admin can see all groups
-                if (IsSuperAdmin(currentUser))
+                var accessibleGroups = allGroups.Select(g => new
                 {
-                    accessibleGroups = allGroups.Select(g => new
-                    {
-                        g.Id,
-                        g.Name,
-                        g.Description,
-                        RegionCode = g.RegionCode ?? "No Region",
-                        g.GroupType,
-                        g.IsActive
-                    }).Cast<object>().ToList();
-                }
-                // PPO Admin can see groups in their region
-                else if (IsPpoAdmin(currentUser))
-                {
-                    accessibleGroups = allGroups
-                        .Where(g => g.RegionCode == currentUser.RegionCode)
-                        .Select(g => new
-                        {
-                            g.Id,
-                            g.Name,
-                            g.Description,
-                            RegionCode = g.RegionCode ?? "No Region",
-                            g.GroupType,
-                            g.IsActive
-                        }).Cast<object>().ToList();
-                }
-                // Field users can see groups they're members of
-                else
-                {
-                    accessibleGroups = allGroups
-                        .Where(g => g.RegionCode == currentUser.RegionCode)
-                        .Select(g => new
-                        {
-                            g.Id,
-                            g.Name,
-                            g.Description,
-                            RegionCode = g.RegionCode ?? "No Region",
-                            g.GroupType,
-                            g.IsActive
-                        }).Cast<object>().ToList();
-                }
+                    g.Id,
+                    g.Name,
+                    g.Description,
+                    g.GroupType,
+                    g.IsActive,
+                    g.HierarchyLevel
+                }).ToList();
 
                 return Ok(new
                 {
                     Success = true,
-                    UserType = GetUserType(currentUser),
-                    UserRegion = currentUser.RegionCode ?? "All Regions",
+                    UserName = currentUser.UserName,
                     GroupCount = accessibleGroups.Count,
-                    Groups = accessibleGroups
+                    Groups = accessibleGroups,
+                    Note = "Regional filtering will be available after database migration"
                 });
             }
             catch (System.Exception ex)
@@ -184,7 +144,7 @@ namespace Business.Solutions.Web.Controllers
         }
 
         /// <summary>
-        /// Test communication between users
+        /// Basic user info comparison (temporary)
         /// </summary>
         [HttpGet("can-communicate/{targetUserId}")]
         public async Task<IActionResult> CanCommunicate(long targetUserId)
@@ -199,43 +159,21 @@ namespace Business.Solutions.Web.Controllers
                 var currentUser = await _userRepository.GetAsync(AbpSession.UserId.Value);
                 var targetUser = await _userRepository.GetAsync(targetUserId);
 
-                bool canCommunicate = false;
-                string reason = "";
-
-                // Super Admin can communicate with everyone
-                if (IsSuperAdmin(currentUser))
-                {
-                    canCommunicate = true;
-                    reason = "Super Admin can communicate with everyone";
-                }
-                // Same region users can communicate
-                else if (currentUser.RegionCode == targetUser.RegionCode)
-                {
-                    canCommunicate = true;
-                    reason = $"Both users are in {currentUser.RegionCode} region";
-                }
-                // Different regions cannot communicate
-                else
-                {
-                    canCommunicate = false;
-                    reason = $"Different regions: {currentUser.RegionCode} vs {targetUser.RegionCode}";
-                }
-
                 return Ok(new
                 {
-                    CanCommunicate = canCommunicate,
-                    Reason = reason,
+                    CanCommunicate = true, // Temporary - all users can communicate
+                    Reason = "Regional restrictions will be applied after database migration",
                     CurrentUser = new
                     {
                         currentUser.UserName,
-                        RegionCode = currentUser.RegionCode ?? "All Regions",
-                        PttRole = currentUser.PttRole ?? "No Role"
+                        currentUser.Name,
+                        currentUser.EmailAddress
                     },
                     TargetUser = new
                     {
                         targetUser.UserName,
-                        RegionCode = targetUser.RegionCode ?? "All Regions",
-                        PttRole = targetUser.PttRole ?? "No Role"
+                        targetUser.Name,
+                        targetUser.EmailAddress
                     }
                 });
             }
@@ -248,24 +186,6 @@ namespace Business.Solutions.Web.Controllers
                     Error = ex.Message
                 });
             }
-        }
-
-        private bool IsSuperAdmin(User user)
-        {
-            return string.IsNullOrEmpty(user.RegionCode) && user.PttRole == "SuperAdmin";
-        }
-
-        private bool IsPpoAdmin(User user)
-        {
-            return !string.IsNullOrEmpty(user.RegionCode) && user.PttRole == "PPOAdmin";
-        }
-
-        private string GetUserType(User user)
-        {
-            if (IsSuperAdmin(user)) return "Super Admin";
-            if (IsPpoAdmin(user)) return "PPO Admin";
-            if (user.PttRole == "FieldUser") return "Field User";
-            return "Regular User";
         }
     }
 }

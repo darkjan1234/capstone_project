@@ -1,43 +1,53 @@
 -- Add RegionCode and PttRole columns to support PPO regional security
 -- Run this SQL script on your database
 
+PRINT 'Starting database update for PTT Regional Security...';
+PRINT '';
+
 -- Add RegionCode to Users table
 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[AbpUsers]') AND name = 'RegionCode')
 BEGIN
-    ALTER TABLE [dbo].[AbpUsers] 
+    ALTER TABLE [dbo].[AbpUsers]
     ADD [RegionCode] NVARCHAR(50) NULL;
-    
-    PRINT 'Added RegionCode column to AbpUsers table';
+
+    PRINT '✅ Added RegionCode column to AbpUsers table';
 END
 ELSE
 BEGIN
-    PRINT 'RegionCode column already exists in AbpUsers table';
+    PRINT '✅ RegionCode column already exists in AbpUsers table';
 END
 
--- Add PttRole to Users table  
+-- Add PttRole to Users table
 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[AbpUsers]') AND name = 'PttRole')
 BEGIN
-    ALTER TABLE [dbo].[AbpUsers] 
+    ALTER TABLE [dbo].[AbpUsers]
     ADD [PttRole] NVARCHAR(50) NULL;
-    
-    PRINT 'Added PttRole column to AbpUsers table';
+
+    PRINT '✅ Added PttRole column to AbpUsers table';
 END
 ELSE
 BEGIN
-    PRINT 'PttRole column already exists in AbpUsers table';
+    PRINT '✅ PttRole column already exists in AbpUsers table';
 END
 
--- Add RegionCode to PttGroups table
-IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[PttGroups]') AND name = 'RegionCode')
+-- Add RegionCode to PttGroups table (only if table exists)
+IF OBJECT_ID(N'[dbo].[PttGroups]', N'U') IS NOT NULL
 BEGIN
-    ALTER TABLE [dbo].[PttGroups] 
-    ADD [RegionCode] NVARCHAR(50) NULL;
-    
-    PRINT 'Added RegionCode column to PttGroups table';
+    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[PttGroups]') AND name = 'RegionCode')
+    BEGIN
+        ALTER TABLE [dbo].[PttGroups]
+        ADD [RegionCode] NVARCHAR(50) NULL;
+
+        PRINT '✅ Added RegionCode column to PttGroups table';
+    END
+    ELSE
+    BEGIN
+        PRINT '✅ RegionCode column already exists in PttGroups table';
+    END
 END
 ELSE
 BEGIN
-    PRINT 'RegionCode column already exists in PttGroups table';
+    PRINT '⚠️  PttGroups table does not exist yet - will be created by Entity Framework';
 END
 
 -- Create sample data for testing
