@@ -27,6 +27,18 @@ namespace Business.Solutions.Authorization.Users
 
         //Can add application specific user properties here
 
+        /// <summary>
+        /// PPO Region Code for this user (e.g., "REGION1", "REGION2", "BOHOL", "CEBU")
+        /// Used to restrict PTT communication to same region only
+        /// Super Admin has no region code (null) and can access all regions
+        /// </summary>
+        public string RegionCode { get; set; }
+
+        /// <summary>
+        /// User role in PTT system: SuperAdmin, PPOAdmin, FieldUser
+        /// </summary>
+        public string PttRole { get; set; }
+
         public User()
         {
             IsLockoutEnabled = true;

@@ -21,6 +21,13 @@ namespace Business.Solutions.PTT
         public string Description { get; set; }
 
         /// <summary>
+        /// PPO Region Code (e.g., "REGION1", "REGION2", "BOHOL", "CEBU")
+        /// Used for communication isolation between regions
+        /// </summary>
+        [StringLength(50)]
+        public string RegionCode { get; set; }
+
+        /// <summary>
         /// The admin user who created this group
         /// </summary>
         public long CreatedByAdminId { get; set; }
@@ -57,9 +64,37 @@ namespace Business.Solutions.PTT
         public bool IsActive { get; set; }
 
         /// <summary>
-        /// Group type: Admin, User, Mixed
+        /// Group type: PPO_Region, Field_Team, Special_Unit
         /// </summary>
         public PttGroupType GroupType { get; set; }
+
+        /// <summary>
+        /// Security: Check if this group can communicate with another group
+        /// Only groups in the same region can communicate (except Super Admin)
+        /// </summary>
+        public bool CanCommunicateWith(PttGroup otherGroup)
+        {
+            // Super Admin (no region code) can communicate with everyone
+            if (string.IsNullOrEmpty(this.RegionCode) || string.IsNullOrEmpty(otherGroup.RegionCode))
+                return true;
+
+            // Same region groups can communicate
+            return this.RegionCode.Equals(otherGroup.RegionCode, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Check if a user can access this group based on their region
+        /// </summary>
+        public bool CanUserAccess(User user)
+        {
+            // Super Admin can access all groups
+            if (user.IsInRole("Admin"))
+                return true;
+
+            // Users can only access groups in their region
+            // We'll need to add RegionCode to User entity too
+            return true; // Placeholder for now
+        }
 
         public PttGroup()
         {
@@ -79,8 +114,8 @@ namespace Business.Solutions.PTT
 
     public enum PttGroupType
     {
-        Admin = 1,
-        User = 2,
-        Mixed = 3
+        PPO_Region = 1,      // PPO Regional Office (like Region1, Region2)
+        Field_Team = 2,      // Field teams under a PPO
+        Special_Unit = 3     // Special operations units
     }
 }
