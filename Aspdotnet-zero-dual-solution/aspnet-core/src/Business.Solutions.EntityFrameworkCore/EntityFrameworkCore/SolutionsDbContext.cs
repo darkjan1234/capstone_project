@@ -15,6 +15,7 @@ using Business.Solutions.OpenIddict.Authorizations;
 using Business.Solutions.OpenIddict.Scopes;
 using Business.Solutions.OpenIddict.Tokens;
 using Business.Solutions.Storage;
+using Business.Solutions.PTT;
 
 namespace Business.Solutions.EntityFrameworkCore
 {
@@ -35,6 +36,10 @@ namespace Business.Solutions.EntityFrameworkCore
         public virtual DbSet<Group> Groups { get; set; }
 
         public virtual DbSet<PttUser> PttUsers { get; set; }
+
+        // New PTT Group Management entities
+        public virtual DbSet<PttGroup> PttGroups { get; set; }
+        public virtual DbSet<PttGroupMember> PttGroupMembers { get; set; }
 
         /* Define an IDbSet for each entity of the application */
 

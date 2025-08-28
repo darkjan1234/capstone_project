@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'ptt_main_screen.dart';
+import 'test_users.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -198,14 +199,46 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 8),
 
             Text(
-              'Use PTT User credentials from the web interface',
+              'Select a test user or enter custom credentials',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey.shade600,
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 32),
+            SizedBox(height: 16),
+
+            // Test Users Dropdown
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  hint: Text('Select Test User'),
+                  value: null,
+                  items: TestUsers.users.map((user) {
+                    return DropdownMenuItem<String>(
+                      value: user['username'],
+                      child: Text('${user['name']} (${user['username']})'),
+                    );
+                  }).toList(),
+                  onChanged: (username) {
+                    if (username != null) {
+                      final user = TestUsers.getUserByUsername(username);
+                      if (user != null) {
+                        usernameController.text = user['username']!;
+                        passwordController.text = user['password']!;
+                      }
+                    }
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
 
             TextField(
               controller: usernameController,
@@ -270,7 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Test Credentials:',
+                    '🔑 Available Login Accounts:',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.blue.shade800,
@@ -278,12 +311,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Email: albert@gmail.com\nPassword: 123qwe',
+                    'admin / 123qwe (Admin)\n'
+                    'user1 / 123qwe (User)\n'
+                    'user2 / 123qwe (User)\n'
+                    'radio1 / 123qwe (User)\n'
+                    'radio2 / 123qwe (User)\n\n'
+                    '📱 For 2 devices: Use different accounts\n'
+                    '🎯 Join same group to talk!',
                     style: TextStyle(
-                      fontFamily: 'monospace',
+                      fontSize: 12,
                       color: Colors.blue.shade700,
                     ),
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.left,
                   ),
                 ],
               ),

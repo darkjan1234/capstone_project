@@ -1,0 +1,220 @@
+<div class="modal fade" id="groupMembersModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fas fa-users mr-2"></i>
+                    {{ l("GroupMembers") }}: {{ groupName }}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Add User Section -->
+                <div class="card card-custom mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-user-plus mr-2"></i>
+                            {{ l("AddUserToGroup") }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form #addUserForm="ngForm" (ngSubmit)="addUserToGroup()">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <label>{{ l("SelectUser") }} <span class="text-danger">*</span></label>
+                                    <select class="form-control" 
+                                            [(ngModel)]="selectedUserId" 
+                                            name="selectedUser"
+                                            required>
+                                        <option value="">{{ l("SelectUser") }}</option>
+                                        <option *ngFor="let user of availableUsers" [value]="user.id">
+                                            {{ user.fullName }} ({{ user.userName }})
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>{{ l("Role") }} <span class="text-danger">*</span></label>
+                                    <select class="form-control" 
+                                            [(ngModel)]="selectedRole" 
+                                            name="selectedRole"
+                                            required>
+                                        <option value="">{{ l("SelectRole") }}</option>
+                                        <option [value]="pttGroupRole.User">{{ l("User") }}</option>
+                                        <option [value]="pttGroupRole.Admin">{{ l("Admin") }}</option>
+                                        <option [value]="pttGroupRole.SuperAdmin">{{ l("SuperAdmin") }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>&nbsp;</label>
+                                    <button type="submit" 
+                                            class="btn btn-primary btn-block"
+                                            [disabled]="!addUserForm.form.valid || addingUser">
+                                        <i class="fas fa-plus"></i>
+                                        {{ l("AddUser") }}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <input type="text" 
+                               class="form-control" 
+                               [(ngModel)]="memberFilterText" 
+                               (keyup.enter)="getGroupMembers()"
+                               placeholder="{{ l('SearchMembers') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" [(ngModel)]="selectedMemberRole" (change)="getGroupMembers()">
+                            <option value="">{{ l("AllRoles") }}</option>
+                            <option [value]="pttGroupRole.User">{{ l("User") }}</option>
+                            <option [value]="pttGroupRole.Admin">{{ l("Admin") }}</option>
+                            <option [value]="pttGroupRole.SuperAdmin">{{ l("SuperAdmin") }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" [(ngModel)]="selectedMemberStatus" (change)="getGroupMembers()">
+                            <option value="">{{ l("AllStatuses") }}</option>
+                            <option value="true">{{ l("Active") }}</option>
+                            <option value="false">{{ l("Inactive") }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary" (click)="getGroupMembers()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Members Table -->
+                <div class="table-responsive">
+                    <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                        <thead>
+                            <tr class="text-left text-uppercase">
+                                <th>{{ l("User") }}</th>
+                                <th>{{ l("Role") }}</th>
+                                <th>{{ l("Status") }}</th>
+                                <th>{{ l("JoinedDate") }}</th>
+                                <th>{{ l("AddedBy") }}</th>
+                                <th>{{ l("Actions") }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let member of groupMembers.items">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="symbol symbol-40 symbol-light-primary mr-3">
+                                            <span class="symbol-label">
+                                                {{ getUserInitials(member.userFullName) }}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="text-dark-75 font-weight-bolder d-block font-size-lg">
+                                                {{ member.userFullName }}
+                                            </span>
+                                            <span class="text-muted font-weight-bold">
+                                                {{ member.userName }} | {{ member.userEmailAddress }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge" [ngClass]="getRoleBadgeClass(member.role)">
+                                        {{ getRoleText(member.role) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge" [ngClass]="member.isActive ? 'badge-light-success' : 'badge-light-danger'">
+                                        {{ member.isActive ? l("Active") : l("Inactive") }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-muted font-weight-bold">
+                                        {{ member.joinedDate | momentFormat: 'L LT' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-muted font-weight-bold">
+                                        {{ member.addedByAdminName || l("System") }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="dropdown dropdown-inline">
+                                        <button type="button" class="btn btn-clean btn-hover-light-primary btn-sm btn-icon" data-toggle="dropdown">
+                                            <i class="ki ki-bold-more-hor"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+                                            <ul class="navi flex-column navi-hover py-2">
+                                                <li class="navi-item">
+                                                    <a href="#" class="navi-link" (click)="editMemberRole(member)">
+                                                        <span class="navi-icon"><i class="la la-edit"></i></span>
+                                                        <span class="navi-text">{{ l("EditRole") }}</span>
+                                                    </a>
+                                                </li>
+                                                <li class="navi-item" *ngIf="member.isActive">
+                                                    <a href="#" class="navi-link" (click)="deactivateMember(member)">
+                                                        <span class="navi-icon"><i class="la la-pause"></i></span>
+                                                        <span class="navi-text">{{ l("Deactivate") }}</span>
+                                                    </a>
+                                                </li>
+                                                <li class="navi-item" *ngIf="!member.isActive">
+                                                    <a href="#" class="navi-link" (click)="activateMember(member)">
+                                                        <span class="navi-icon"><i class="la la-play"></i></span>
+                                                        <span class="navi-text">{{ l("Activate") }}</span>
+                                                    </a>
+                                                </li>
+                                                <li class="navi-item">
+                                                    <a href="#" class="navi-link" (click)="removeUserFromGroup(member)">
+                                                        <span class="navi-icon"><i class="la la-trash"></i></span>
+                                                        <span class="navi-text">{{ l("Remove") }}</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="row" *ngIf="groupMembers.totalCount > 0">
+                    <div class="col-sm-6 col-md-4">
+                        <div class="dataTables_info">
+                            {{ l("ShowingXtoYofZentries", 
+                                (groupMembers.totalCount === 0 ? 0 : (memberRequest.skipCount + 1)), 
+                                (memberRequest.skipCount + groupMembers.items.length), 
+                                groupMembers.totalCount) }}
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <abp-pagination-controls id="GroupMembersTable"
+                                               (pageChange)="getGroupMembers($event)"
+                                               [responsive]="true">
+                        </abp-pagination-controls>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="text-center py-5" *ngIf="groupMembers.totalCount === 0">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">{{ l("NoMembersFound") }}</h5>
+                    <p class="text-muted">{{ l("AddUsersToThisGroupToGetStarted") }}</p>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    {{ l("Close") }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

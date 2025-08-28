@@ -65,6 +65,12 @@ export class AppNavigationService {
                 '/app/main/maintenance/groupMembers',
             ),
             new AppMenuItem(
+                'PTTGroupManagement',
+                'Pages.Administration.Users',
+                'flaticon-network',
+                '/app/admin/ptt-groups',
+            ),
+            new AppMenuItem(
                 'Settings',
                 '',
                 'flaticon-interface-8',

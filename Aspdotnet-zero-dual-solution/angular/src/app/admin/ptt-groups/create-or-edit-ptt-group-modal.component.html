@@ -1,0 +1,141 @@
+<div class="modal fade" id="createOrEditPttGroupModal" tabindex="-1" role="dialog" [attr.aria-labelledby]="modalTitle">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form *ngIf="active" #pttGroupForm="ngForm" novalidate (ngSubmit)="save()">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitle">
+                        <span>{{ l(isEditMode ? "EditPTTGroup" : "CreateNewPTTGroup") }}</span>
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="groupName">{{ l("GroupName") }} <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               id="groupName"
+                               class="form-control" 
+                               name="groupName"
+                               [(ngModel)]="pttGroup.name" 
+                               required
+                               maxlength="128"
+                               #groupNameModel="ngModel"
+                               [class.is-invalid]="groupNameModel.invalid && groupNameModel.touched">
+                        <div class="invalid-feedback" *ngIf="groupNameModel.invalid && groupNameModel.touched">
+                            <div *ngIf="groupNameModel.errors?.required">{{ l("ThisFieldIsRequired") }}</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="groupDescription">{{ l("Description") }}</label>
+                        <textarea id="groupDescription"
+                                  class="form-control" 
+                                  name="groupDescription"
+                                  [(ngModel)]="pttGroup.description" 
+                                  rows="3"
+                                  maxlength="500"
+                                  placeholder="{{ l('GroupDescriptionPlaceholder') }}">
+                        </textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="groupType">{{ l("GroupType") }} <span class="text-danger">*</span></label>
+                        <select id="groupType"
+                                class="form-control" 
+                                name="groupType"
+                                [(ngModel)]="pttGroup.groupType" 
+                                required
+                                #groupTypeModel="ngModel"
+                                [class.is-invalid]="groupTypeModel.invalid && groupTypeModel.touched">
+                            <option value="">{{ l("SelectGroupType") }}</option>
+                            <option [value]="pttGroupType.Admin">{{ l("AdminGroup") }}</option>
+                            <option [value]="pttGroupType.User">{{ l("UserGroup") }}</option>
+                            <option [value]="pttGroupType.Mixed">{{ l("MixedGroup") }}</option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="groupTypeModel.invalid && groupTypeModel.touched">
+                            <div *ngIf="groupTypeModel.errors?.required">{{ l("ThisFieldIsRequired") }}</div>
+                        </div>
+                        <small class="form-text text-muted">
+                            <div *ngIf="pttGroup.groupType == pttGroupType.Admin">
+                                {{ l("AdminGroupDescription") }}
+                            </div>
+                            <div *ngIf="pttGroup.groupType == pttGroupType.User">
+                                {{ l("UserGroupDescription") }}
+                            </div>
+                            <div *ngIf="pttGroup.groupType == pttGroupType.Mixed">
+                                {{ l("MixedGroupDescription") }}
+                            </div>
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="parentGroup">{{ l("ParentGroup") }}</label>
+                        <select id="parentGroup"
+                                class="form-control" 
+                                name="parentGroup"
+                                [(ngModel)]="pttGroup.parentGroupId">
+                            <option value="">{{ l("NoParentGroup") }}</option>
+                            <option *ngFor="let group of availableParentGroups" [value]="group.id">
+                                {{ group.name }} ({{ getGroupTypeText(group.groupType) }})
+                            </option>
+                        </select>
+                        <small class="form-text text-muted">
+                            {{ l("ParentGroupHelpText") }}
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" 
+                                   class="custom-control-input" 
+                                   id="isActive"
+                                   name="isActive"
+                                   [(ngModel)]="pttGroup.isActive">
+                            <label class="custom-control-label" for="isActive">
+                                {{ l("IsActive") }}
+                            </label>
+                        </div>
+                        <small class="form-text text-muted">
+                            {{ l("IsActiveHelpText") }}
+                        </small>
+                    </div>
+
+                    <!-- Group Hierarchy Preview -->
+                    <div class="form-group" *ngIf="pttGroup.parentGroupId">
+                        <label>{{ l("GroupHierarchyPreview") }}</label>
+                        <div class="hierarchy-preview">
+                            <div class="preview-item" *ngFor="let level of getHierarchyPreview(); let i = index">
+                                <span [style.margin-left.px]="i * 20">
+                                    <i class="fas fa-arrow-right" *ngIf="i > 0"></i>
+                                    {{ level.name }}
+                                    <span class="badge badge-light ml-1">{{ getGroupTypeText(level.groupType) }}</span>
+                                </span>
+                            </div>
+                            <div class="preview-item current-group">
+                                <span [style.margin-left.px]="getHierarchyPreview().length * 20">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <strong>{{ pttGroup.name || l("NewGroup") }}</strong>
+                                    <span class="badge badge-primary ml-1">{{ getGroupTypeText(pttGroup.groupType) }}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button [disabled]="saving" type="button" class="btn btn-secondary" data-dismiss="modal">
+                        {{ l("Cancel") }}
+                    </button>
+                    <button type="submit" 
+                            class="btn btn-primary" 
+                            [disabled]="!pttGroupForm.form.valid || saving">
+                        <i class="fa fa-save"></i>
+                        <span>{{ l("Save") }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

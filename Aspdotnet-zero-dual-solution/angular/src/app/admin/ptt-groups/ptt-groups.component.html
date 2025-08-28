@@ -1,0 +1,233 @@
+<div [@routerTransition]>
+    <div class="content d-flex flex-column flex-column-fluid">
+        <sub-header [title]="l('PTTGroupManagement')" [description]="l('PTTGroupManagementDescription')">
+            <button type="button" class="btn btn-primary" (click)="createPttGroup()">
+                <i class="fa fa-plus"></i>
+                {{ l("CreateNewPTTGroup") }}
+            </button>
+        </sub-header>
+
+        <div class="d-flex flex-column-fluid">
+            <div class="container">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">
+                                <i class="fas fa-users text-primary"></i>
+                            </span>
+                            <h3 class="card-label">{{ l("PTTGroups") }}</h3>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="dropdown dropdown-inline mr-2">
+                                <button type="button" class="btn btn-light-primary btn-icon" data-toggle="dropdown">
+                                    <i class="ki ki-bold-more-hor"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
+                                    <ul class="navi flex-column navi-hover py-2">
+                                        <li class="navi-header font-weight-bolder text-uppercase font-size-sm text-primary pb-2">
+                                            {{ l("Actions") }}
+                                        </li>
+                                        <li class="navi-item">
+                                            <a href="#" class="navi-link" (click)="exportToExcel()">
+                                                <span class="navi-icon"><i class="la la-file-excel-o"></i></span>
+                                                <span class="navi-text">{{ l("ExportToExcel") }}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Filters -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <input type="text" 
+                                       class="form-control" 
+                                       [(ngModel)]="filterText" 
+                                       (keyup.enter)="getPttGroups()"
+                                       placeholder="{{ l('SearchWithThreeDot') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-control" [(ngModel)]="selectedGroupType" (change)="getPttGroups()">
+                                    <option value="">{{ l("AllGroupTypes") }}</option>
+                                    <option value="1">{{ l("AdminGroup") }}</option>
+                                    <option value="2">{{ l("UserGroup") }}</option>
+                                    <option value="3">{{ l("MixedGroup") }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-control" [(ngModel)]="selectedActiveStatus" (change)="getPttGroups()">
+                                    <option value="">{{ l("AllStatuses") }}</option>
+                                    <option value="true">{{ l("Active") }}</option>
+                                    <option value="false">{{ l("Inactive") }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary" (click)="getPttGroups()">
+                                    <i class="fas fa-search"></i> {{ l("Search") }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Group Hierarchy Tree -->
+                        <div class="row mb-4" *ngIf="groupHierarchy.length > 0">
+                            <div class="col-12">
+                                <div class="card card-custom card-stretch">
+                                    <div class="card-header">
+                                        <h3 class="card-title">{{ l("GroupHierarchy") }}</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="hierarchy-tree">
+                                            <ng-container *ngFor="let group of groupHierarchy">
+                                                <div class="hierarchy-node" [ngClass]="getGroupTypeClass(group.groupType)">
+                                                    <div class="node-content" (click)="selectGroup(group)">
+                                                        <i class="fas" [ngClass]="getGroupIcon(group.groupType)"></i>
+                                                        <span class="node-name">{{ group.name }}</span>
+                                                        <span class="badge badge-light ml-2">{{ group.memberCount }}</span>
+                                                        <span class="badge ml-1" [ngClass]="group.isActive ? 'badge-success' : 'badge-danger'">
+                                                            {{ group.isActive ? l("Active") : l("Inactive") }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="node-children" *ngIf="group.children.length > 0">
+                                                        <ng-container *ngTemplateOutlet="hierarchyTemplate; context: { groups: group.children, level: 1 }"></ng-container>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Groups Table -->
+                        <div class="table-responsive">
+                            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                                <thead>
+                                    <tr class="text-left text-uppercase">
+                                        <th style="min-width: 200px">{{ l("GroupName") }}</th>
+                                        <th style="min-width: 150px">{{ l("GroupType") }}</th>
+                                        <th style="min-width: 150px">{{ l("CreatedBy") }}</th>
+                                        <th style="min-width: 100px">{{ l("Members") }}</th>
+                                        <th style="min-width: 100px">{{ l("Status") }}</th>
+                                        <th style="min-width: 150px">{{ l("CreationTime") }}</th>
+                                        <th style="min-width: 100px">{{ l("Actions") }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let group of pttGroups.items">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas mr-2" [ngClass]="getGroupIcon(group.groupType)"></i>
+                                                <div>
+                                                    <span class="text-dark-75 font-weight-bolder d-block font-size-lg">
+                                                        {{ group.name }}
+                                                    </span>
+                                                    <span class="text-muted font-weight-bold" *ngIf="group.description">
+                                                        {{ group.description }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge" [ngClass]="getGroupTypeBadgeClass(group.groupType)">
+                                                {{ getGroupTypeText(group.groupType) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark-75 font-weight-bolder d-block">
+                                                {{ group.createdByAdminName }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-light-primary">{{ group.memberCount }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge" [ngClass]="group.isActive ? 'badge-light-success' : 'badge-light-danger'">
+                                                {{ group.isActive ? l("Active") : l("Inactive") }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-muted font-weight-bold">
+                                                {{ group.creationTime | momentFormat: 'L' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown dropdown-inline">
+                                                <button type="button" class="btn btn-clean btn-hover-light-primary btn-sm btn-icon" data-toggle="dropdown">
+                                                    <i class="ki ki-bold-more-hor"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+                                                    <ul class="navi flex-column navi-hover py-2">
+                                                        <li class="navi-item">
+                                                            <a href="#" class="navi-link" (click)="editPttGroup(group)">
+                                                                <span class="navi-icon"><i class="la la-edit"></i></span>
+                                                                <span class="navi-text">{{ l("Edit") }}</span>
+                                                            </a>
+                                                        </li>
+                                                        <li class="navi-item">
+                                                            <a href="#" class="navi-link" (click)="viewGroupMembers(group)">
+                                                                <span class="navi-icon"><i class="la la-users"></i></span>
+                                                                <span class="navi-text">{{ l("Members") }}</span>
+                                                            </a>
+                                                        </li>
+                                                        <li class="navi-item">
+                                                            <a href="#" class="navi-link" (click)="deletePttGroup(group)">
+                                                                <span class="navi-icon"><i class="la la-trash"></i></span>
+                                                                <span class="navi-text">{{ l("Delete") }}</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="row">
+                            <div class="col-sm-6 col-md-4">
+                                <div class="dataTables_info">
+                                    {{ l("ShowingXtoYofZentries", 
+                                        (pttGroups.totalCount === 0 ? 0 : (request.skipCount + 1)), 
+                                        (request.skipCount + pttGroups.items.length), 
+                                        pttGroups.totalCount) }}
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-8">
+                                <abp-pagination-controls id="PttGroupsTable"
+                                                       (pageChange)="getPttGroups($event)"
+                                                       [responsive]="true">
+                                </abp-pagination-controls>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hierarchy Template -->
+<ng-template #hierarchyTemplate let-groups="groups" let-level="level">
+    <div *ngFor="let group of groups" class="hierarchy-child" [style.margin-left.px]="level * 20">
+        <div class="node-content" [ngClass]="getGroupTypeClass(group.groupType)" (click)="selectGroup(group)">
+            <i class="fas" [ngClass]="getGroupIcon(group.groupType)"></i>
+            <span class="node-name">{{ group.name }}</span>
+            <span class="badge badge-light ml-2">{{ group.memberCount }}</span>
+            <span class="badge ml-1" [ngClass]="group.isActive ? 'badge-success' : 'badge-danger'">
+                {{ group.isActive ? l("Active") : l("Inactive") }}
+            </span>
+        </div>
+        <div class="node-children" *ngIf="group.children.length > 0">
+            <ng-container *ngTemplateOutlet="hierarchyTemplate; context: { groups: group.children, level: level + 1 }"></ng-container>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Modals -->
+<createOrEditPttGroupModal #createOrEditPttGroupModal (modalSave)="getPttGroups()"></createOrEditPttGroupModal>
+<groupMembersModal #groupMembersModal></groupMembersModal>

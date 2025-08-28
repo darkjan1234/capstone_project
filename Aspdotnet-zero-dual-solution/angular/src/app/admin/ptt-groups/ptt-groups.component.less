@@ -1,0 +1,227 @@
+/* PTT Groups Component Styles */
+
+.hierarchy-tree {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    
+    .hierarchy-node {
+        margin-bottom: 15px;
+        
+        .node-content {
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
+            
+            .node-name {
+                font-weight: 600;
+                margin-left: 8px;
+                flex-grow: 1;
+            }
+            
+            i {
+                font-size: 16px;
+                width: 20px;
+                text-align: center;
+            }
+        }
+        
+        .node-children {
+            margin-top: 10px;
+            margin-left: 20px;
+            border-left: 2px dashed #dee2e6;
+            padding-left: 20px;
+            
+            .hierarchy-child {
+                margin-bottom: 10px;
+                position: relative;
+                
+                &:before {
+                    content: '';
+                    position: absolute;
+                    left: -20px;
+                    top: 20px;
+                    width: 15px;
+                    height: 2px;
+                    background: #dee2e6;
+                }
+                
+                .node-content {
+                    padding: 8px 12px;
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}
+
+/* Group Type Specific Styles */
+.group-admin {
+    .node-content {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        border: 2px solid #dc3545;
+        
+        i {
+            color: #fff;
+        }
+        
+        .badge {
+            background: rgba(255,255,255,0.2) !important;
+            color: white !important;
+        }
+    }
+}
+
+.group-user {
+    .node-content {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        border: 2px solid #007bff;
+        
+        i {
+            color: #fff;
+        }
+        
+        .badge {
+            background: rgba(255,255,255,0.2) !important;
+            color: white !important;
+        }
+    }
+}
+
+.group-mixed {
+    .node-content {
+        background: linear-gradient(135deg, #ffc107, #e0a800);
+        color: #212529;
+        border: 2px solid #ffc107;
+        
+        i {
+            color: #212529;
+        }
+        
+        .badge {
+            background: rgba(0,0,0,0.1) !important;
+            color: #212529 !important;
+        }
+    }
+}
+
+/* Table Enhancements */
+.table {
+    .text-dark-75 {
+        color: #3F4254 !important;
+    }
+    
+    .font-weight-bolder {
+        font-weight: 600 !important;
+    }
+    
+    .badge {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+}
+
+/* Card Enhancements */
+.card-custom {
+    box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.1);
+    border: 0;
+    
+    .card-header {
+        border-bottom: 1px solid #EBEDF3;
+        background: #fff;
+        
+        .card-title {
+            .card-icon {
+                margin-right: 10px;
+                
+                i {
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+}
+
+/* Filter Section */
+.row.mb-3 {
+    .form-control {
+        border: 1px solid #E4E6EF;
+        border-radius: 6px;
+        
+        &:focus {
+            border-color: #3699FF;
+            box-shadow: 0 0 0 0.2rem rgba(54, 153, 255, 0.25);
+        }
+    }
+    
+    .btn-primary {
+        background: #3699FF;
+        border-color: #3699FF;
+        
+        &:hover {
+            background: #187DE4;
+            border-color: #187DE4;
+        }
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hierarchy-tree {
+        padding: 10px;
+        
+        .hierarchy-node {
+            .node-content {
+                padding: 8px 12px;
+                font-size: 14px;
+                
+                .node-name {
+                    font-size: 13px;
+                }
+            }
+            
+            .node-children {
+                margin-left: 10px;
+                padding-left: 10px;
+                
+                .hierarchy-child {
+                    &:before {
+                        left: -10px;
+                        width: 8px;
+                    }
+                }
+            }
+        }
+    }
+    
+    .table-responsive {
+        font-size: 12px;
+    }
+}
+
+/* Animation for hierarchy expansion */
+.node-children {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

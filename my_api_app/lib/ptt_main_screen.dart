@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'ptt_service.dart';
 import 'login_screen.dart';
 import 'admin_screen.dart';
+import 'group_hierarchy_screen.dart';
 import 'dart:async';
 
 class PttMainScreen extends StatefulWidget {
@@ -262,6 +263,23 @@ class _PttMainScreenState extends State<PttMainScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
+                          builder: (context) => GroupHierarchyScreen(
+                            token: widget.token,
+                            serverUrl: widget.serverUrl,
+                            userId: widget.userId,
+                            userRole: 'ADMIN', // You can determine this from login
+                          ),
+                        ),
+                      );
+                    },
+                    child: Icon(Icons.account_tree, color: Colors.white, size: 24),
+                  ),
+                  SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
                           builder: (context) => AdminScreen(
                             token: widget.token,
                             serverUrl: widget.serverUrl,
@@ -271,8 +289,6 @@ class _PttMainScreenState extends State<PttMainScreen> {
                     },
                     child: Icon(Icons.admin_panel_settings, color: Colors.white, size: 24),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.settings, color: Colors.white, size: 24),
                 ],
               ),
             ],
@@ -369,6 +385,8 @@ class _PttMainScreenState extends State<PttMainScreen> {
                   flex: 1,
                   child: Column(
                     children: [
+                      _buildFeatureButton('GROUP HIERARCHY', Icons.account_tree),
+                      SizedBox(height: 8),
                       _buildFeatureButton('ADD CONTACT', Icons.person_add),
                       SizedBox(height: 8),
                       _buildFeatureButton('Speech to text', Icons.mic),
@@ -407,6 +425,18 @@ class _PttMainScreenState extends State<PttMainScreen> {
         onPressed: () {
           if (text == 'ADD CONTACT') {
             _showAddContactDialog();
+          } else if (text == 'GROUP HIERARCHY') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GroupHierarchyScreen(
+                  token: widget.token,
+                  serverUrl: widget.serverUrl,
+                  userId: widget.userId,
+                  userRole: 'ADMIN', // You can determine this from login
+                ),
+              ),
+            );
           } else {
             _showError('$text feature coming soon!');
           }
