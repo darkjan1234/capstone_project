@@ -163,11 +163,12 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
                         loadChildren: () => import('./mass-notifications/mass-notifications.module').then((m) => m.MassNotificationsModule),
                         data: { permission: 'Pages.Administration.MassNotification' },
                     },
-                    {
-                        path: 'ptt-groups',
-                        loadChildren: () => import('./ptt-groups/ptt-groups.module').then((m) => m.PttGroupsModule),
-                        data: { permission: 'Pages.Administration.Users' },
-                    },
+                    // Temporarily commented out to fix compilation errors
+                    // {
+                    //     path: 'ptt-groups',
+                    //     loadChildren: () => import('./ptt-groups/ptt-groups.module').then((m) => m.PttGroupsModule),
+                    //     data: { permission: 'Pages.Administration.Users' },
+                    // },
                     { path: '', redirectTo: 'hostDashboard', pathMatch: 'full' },
                     { path: '**', redirectTo: 'hostDashboard' },
                 ],
