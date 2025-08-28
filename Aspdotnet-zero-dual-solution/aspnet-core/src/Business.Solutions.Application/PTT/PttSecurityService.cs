@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
+using Abp.Authorization;
 using Business.Solutions.Authorization.Users;
 using Business.Solutions.PTT;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace Business.Solutions.PTT
     /// <summary>
     /// Service for handling PTT security and region-based access control
     /// </summary>
-    public class PttSecurityService : ApplicationService
+    public class PttSecurityService : ApplicationService, IPttSecurityService
     {
         private readonly IRepository<PttGroup, long> _pttGroupRepository;
         private readonly IRepository<User, long> _userRepository;
@@ -29,31 +30,34 @@ namespace Business.Solutions.PTT
         /// <summary>
         /// Get all groups that the current user can access based on their region
         /// </summary>
-        public async Task<List<PttGroup>> GetAccessibleGroupsAsync()
+        public async Task<List<object>> GetAccessibleGroupsAsync()
         {
             var currentUser = await GetCurrentUserAsync();
             
             // Super Admin can see all groups
             if (await IsCurrentUserSuperAdminAsync())
             {
-                return await _pttGroupRepository.GetAllListAsync();
+                var allGroups = await _pttGroupRepository.GetAllListAsync();
+                return allGroups.Cast<object>().ToList();
             }
 
             // PPO Admin can see groups in their region
             if (await IsCurrentUserPpoAdminAsync())
             {
-                return await _pttGroupRepository
+                var regionGroups = await _pttGroupRepository
                     .GetAll()
                     .Where(g => g.RegionCode == currentUser.RegionCode)
                     .ToListAsync();
+                return regionGroups.Cast<object>().ToList();
             }
 
             // Regular users can only see groups they are members of in their region
-            return await _pttGroupRepository
+            var userGroups = await _pttGroupRepository
                 .GetAll()
-                .Where(g => g.RegionCode == currentUser.RegionCode && 
+                .Where(g => g.RegionCode == currentUser.RegionCode &&
                            g.Members.Any(m => m.UserId == AbpSession.UserId))
                 .ToListAsync();
+            return userGroups.Cast<object>().ToList();
         }
 
         /// <summary>
@@ -129,7 +133,7 @@ namespace Business.Solutions.PTT
         /// <summary>
         /// Create a new PPO region (only Super Admin can do this)
         /// </summary>
-        public async Task<PttGroup> CreatePpoRegionAsync(string regionName, string regionCode, long ppoAdminUserId)
+        public async Task<object> CreatePpoRegionAsync(string regionName, string regionCode, long ppoAdminUserId)
         {
             // Only Super Admin can create PPO regions
             if (!await IsCurrentUserSuperAdminAsync())
