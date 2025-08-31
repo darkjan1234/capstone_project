@@ -24,6 +24,7 @@ using Business.Solutions.EntityFrameworkCore;
 using Business.Solutions.Identity;
 using Business.Solutions.Web.Chat.SignalR;
 using Business.Solutions.Web.PTT;
+using Business.Solutions.PTT;
 using Business.Solutions.Web.Common;
 using Swashbuckle.AspNetCore.Swagger;
 using Business.Solutions.Web.Swagger;
@@ -106,6 +107,13 @@ namespace Business.Solutions.Web.Startup
 
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
+
+            // Add SignalR for real-time PTT communication
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+                options.MaximumReceiveMessageSize = 1024 * 1024; // 1MB for voice data
+            });
 
             if (bool.Parse(_appConfiguration["OpenIddict:IsEnabled"]))
             {
@@ -252,7 +260,7 @@ namespace Business.Solutions.Web.Startup
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");
                 endpoints.MapHub<ChatHub>("/signalr-chat");
-                endpoints.MapHub<PttHub>("/signalr-ptt");
+                endpoints.MapHub<PttVoiceHub>("/signalr-ptt-voice");
 
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");

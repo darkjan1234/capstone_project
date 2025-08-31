@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PTT Voice Test</title>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .user-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .user-section.connected {
+            border-color: #28a745;
+            background-color: #f8fff9;
+        }
+        .ptt-button {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.2s;
+        }
+        .ptt-button.ready {
+            background-color: #28a745;
+            color: white;
+        }
+        .ptt-button.transmitting {
+            background-color: #dc3545;
+            color: white;
+            transform: scale(1.1);
+        }
+        .ptt-button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .log {
+            height: 200px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .online-users {
+            background-color: #e7f3ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎙️ PTT Voice Transmission Test</h1>
+        
+        <!-- User 1 -->
+        <div class="user-section" id="user1-section">
+            <h3>👤 User 1 (admin)</h3>
+            <button id="connect1" onclick="connectUser(1, 'admin')">Connect User 1</button>
+            <button id="ptt1" class="ptt-button" disabled onmousedown="startTransmission(1)" onmouseup="stopTransmission(1)">
+                PUSH TO TALK
+            </button>
+            <div id="status1" class="status info">Disconnected</div>
+        </div>
+
+        <!-- User 2 -->
+        <div class="user-section" id="user2-section">
+            <h3>👤 User 2 (john)</h3>
+            <button id="connect2" onclick="connectUser(2, 'john')">Connect User 2</button>
+            <button id="ptt2" class="ptt-button" disabled onmousedown="startTransmission(2)" onmouseup="stopTransmission(2)">
+                PUSH TO TALK
+            </button>
+            <div id="status2" class="status info">Disconnected</div>
+        </div>
+
+        <!-- User 3 -->
+        <div class="user-section" id="user3-section">
+            <h3>👤 User 3 (user)</h3>
+            <button id="connect3" onclick="connectUser(3, 'user')">Connect User 3</button>
+            <button id="ptt3" class="ptt-button" disabled onmousedown="startTransmission(3)" onmouseup="stopTransmission(3)">
+                PUSH TO TALK
+            </button>
+            <div id="status3" class="status info">Disconnected</div>
+        </div>
+
+        <!-- Online Users -->
+        <div class="online-users">
+            <h4>🟢 Online Users</h4>
+            <div id="online-users">None</div>
+        </div>
+
+        <!-- Activity Log -->
+        <div>
+            <h4>📋 Activity Log</h4>
+            <div id="log" class="log"></div>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+    </div>
+
+    <!-- SignalR JavaScript Client -->
+    <script src="https://unpkg.com/@microsoft/signalr@latest/dist/browser/signalr.js"></script>
+    
+    <script>
+        // Global variables
+        const connections = {};
+        const users = {
+            1: { id: 1, name: 'admin' },
+            2: { id: 2, name: 'john' },
+            3: { id: 3, name: 'user' }
+        };
+        let audioContext;
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        // Initialize audio context
+        async function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                log('Audio context initialized');
+            } catch (error) {
+                log('Error initializing audio: ' + error.message, 'error');
+            }
+        }
+
+        // Connect user to PTT system
+        async function connectUser(userId, userName) {
+            try {
+                // Initialize audio on first connection
+                if (!audioContext) {
+                    await initAudio();
+                }
+
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/signalr-ptt-voice")
+                    .build();
+
+                // Set up event handlers
+                connection.on("UserJoined", (data) => {
+                    log(`${data.UserName} joined group ${data.GroupName}`, 'success');
+                    updateOnlineUsers();
+                });
+
+                connection.on("UserLeft", (data) => {
+                    log(`${data.UserName} left`, 'info');
+                    updateOnlineUsers();
+                });
+
+                connection.on("TransmissionStarted", (data) => {
+                    log(`🎙️ ${data.UserName} started talking`, 'info');
+                    // Show visual indicator that someone is talking
+                    showTransmissionIndicator(data.UserName);
+                });
+
+                connection.on("TransmissionStopped", (data) => {
+                    log(`🔇 ${data.UserName} stopped talking`, 'info');
+                    hideTransmissionIndicator();
+                });
+
+                connection.on("ReceiveVoice", (data) => {
+                    log(`🔊 Receiving voice from ${data.UserName}`, 'success');
+                    // Play received audio
+                    playAudio(data.AudioData);
+                });
+
+                connection.on("OnlineUsers", (users) => {
+                    updateOnlineUsersList(users);
+                });
+
+                connection.on("Error", (message) => {
+                    log(`Error: ${message}`, 'error');
+                });
+
+                // Start connection
+                await connection.start();
+                connections[userId] = connection;
+
+                // Join PTT system
+                await connection.invoke("JoinPttSystem", userId, userName);
+
+                // Update UI
+                document.getElementById(`connect${userId}`).disabled = true;
+                document.getElementById(`ptt${userId}`).disabled = false;
+                document.getElementById(`ptt${userId}`).className = 'ptt-button ready';
+                document.getElementById(`status${userId}`).textContent = 'Connected';
+                document.getElementById(`status${userId}`).className = 'status success';
+                document.getElementById(`user${userId}-section`).className = 'user-section connected';
+
+                log(`User ${userName} connected successfully`, 'success');
+
+            } catch (error) {
+                log(`Error connecting user ${userName}: ${error.message}`, 'error');
+            }
+        }
+
+        // Start voice transmission
+        async function startTransmission(userId) {
+            try {
+                const connection = connections[userId];
+                const user = users[userId];
+                
+                if (!connection) {
+                    log('User not connected', 'error');
+                    return;
+                }
+
+                // Update UI
+                document.getElementById(`ptt${userId}`).className = 'ptt-button transmitting';
+                document.getElementById(`status${userId}`).textContent = 'Transmitting...';
+
+                // Start transmission
+                await connection.invoke("StartTransmission", 1, user.name); // Group ID 1
+
+                // Start recording audio
+                await startRecording(userId);
+
+                log(`${user.name} started transmission`, 'info');
+
+            } catch (error) {
+                log(`Error starting transmission: ${error.message}`, 'error');
+            }
+        }
+
+        // Stop voice transmission
+        async function stopTransmission(userId) {
+            try {
+                const connection = connections[userId];
+                const user = users[userId];
+                
+                if (!connection) return;
+
+                // Update UI
+                document.getElementById(`ptt${userId}`).className = 'ptt-button ready';
+                document.getElementById(`status${userId}`).textContent = 'Connected';
+
+                // Stop transmission
+                await connection.invoke("StopTransmission", 1, user.name); // Group ID 1
+
+                // Stop recording
+                stopRecording();
+
+                log(`${user.name} stopped transmission`, 'info');
+
+            } catch (error) {
+                log(`Error stopping transmission: ${error.message}`, 'error');
+            }
+        }
+
+        // Start recording audio
+        async function startRecording(userId) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                recordedChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                        // Convert to base64 and send
+                        const reader = new FileReader();
+                        reader.onload = async () => {
+                            const audioData = reader.result.split(',')[1]; // Remove data:audio/webm;base64,
+                            const connection = connections[userId];
+                            const user = users[userId];
+                            if (connection) {
+                                await connection.invoke("TransmitVoice", 1, audioData, user.name);
+                            }
+                        };
+                        reader.readAsDataURL(event.data);
+                    }
+                };
+
+                mediaRecorder.start(100); // Record in 100ms chunks
+                log('Recording started', 'info');
+
+            } catch (error) {
+                log(`Error starting recording: ${error.message}`, 'error');
+            }
+        }
+
+        // Stop recording audio
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                log('Recording stopped', 'info');
+            }
+        }
+
+        // Play received audio
+        function playAudio(audioData) {
+            try {
+                const audio = new Audio('data:audio/webm;base64,' + audioData);
+                audio.play();
+            } catch (error) {
+                log(`Error playing audio: ${error.message}`, 'error');
+            }
+        }
+
+        // Show transmission indicator
+        function showTransmissionIndicator(userName) {
+            // Add visual indicator that someone is talking
+            log(`🔊 ${userName} is talking...`, 'info');
+        }
+
+        // Hide transmission indicator
+        function hideTransmissionIndicator() {
+            // Remove visual indicator
+        }
+
+        // Update online users
+        function updateOnlineUsers() {
+            // This will be called when users join/leave
+        }
+
+        // Update online users list
+        function updateOnlineUsersList(users) {
+            const onlineUsersDiv = document.getElementById('online-users');
+            if (users.length === 0) {
+                onlineUsersDiv.textContent = 'None';
+            } else {
+                onlineUsersDiv.innerHTML = users.map(u => `👤 ${u.UserName}`).join('<br>');
+            }
+        }
+
+        // Log function
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logEntry.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Clear log
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            log('PTT Voice Test initialized. Click "Connect User" buttons to start.', 'info');
+        };
+    </script>
+</body>
+</html>
