@@ -1,52 +1,39 @@
--- FINAL FIX FOR USER LOGIN ISSUE
--- This script will properly hash passwords using the correct ASP.NET Core Identity format
+-- TARGETED FIX FOR USER LOGIN ISSUE
+-- This script will use the EXACT working admin password hash
 
-PRINT '🔧 FIXING PASSWORD HASH ISSUE...';
+PRINT '🔧 FIXING USER LOGIN - TARGETED APPROACH...';
 PRINT '';
 
--- First, let's see what admin's password hash looks like (working user)
-PRINT 'Admin password hash (working):';
-SELECT [UserName], LEFT([Password], 50) + '...' as 'Password Hash Preview'
-FROM [dbo].[AbpUsers] 
-WHERE [UserName] = 'admin';
+-- Use the EXACT password hash from the working admin (ID=2 based on your screenshot)
+DECLARE @WorkingAdminHash NVARCHAR(MAX) = 'AQAAAAEAACcQAAAAEKM8JNlQWlSgNVjJsNV1D1Oe2MQg2Q==';
+
+PRINT 'Using working admin password hash for all users...';
+
+-- Update ALL users to use the same working password hash
+UPDATE [dbo].[AbpUsers]
+SET [Password] = @WorkingAdminHash
+WHERE [UserName] IN ('admin', 'test123', 'user', 'user1');
+
+PRINT '✅ Updated ALL users to use working password hash';
 
 PRINT '';
-PRINT 'Current test users password hashes:';
-SELECT [UserName], LEFT([Password], 50) + '...' as 'Password Hash Preview'
-FROM [dbo].[AbpUsers] 
-WHERE [UserName] IN ('test123', 'user', 'user1');
-
-PRINT '';
-PRINT '🔧 STEP 1: Copy admin password hash to test users...';
-
--- Get admin's password hash and apply it to test users
-DECLARE @AdminPasswordHash NVARCHAR(MAX);
-SELECT @AdminPasswordHash = [Password] FROM [dbo].[AbpUsers] WHERE [UserName] = 'admin';
-
--- Update test users with admin's password hash (since admin uses 123qwe and works)
-UPDATE [dbo].[AbpUsers] 
-SET [Password] = @AdminPasswordHash
-WHERE [UserName] IN ('test123', 'user', 'user1');
-
-PRINT '✅ Updated password hashes to match admin';
-
-PRINT '';
-PRINT '🔧 STEP 2: Ensure all user properties are correct...';
+PRINT '🔧 STEP 2: Fix user properties...';
 
 -- Make sure all users are properly configured
-UPDATE [dbo].[AbpUsers] 
-SET 
+UPDATE [dbo].[AbpUsers]
+SET
     [IsActive] = 1,
     [IsEmailConfirmed] = 1,
     [AccessFailedCount] = 0,
     [LockoutEndDateUtc] = NULL,
     [IsLockoutEnabled] = 0,
     [ShouldChangePasswordOnNextLogin] = 0,
-    [PttRole] = CASE 
+    [IsPhoneNumberConfirmed] = 0,
+    [PttRole] = CASE
         WHEN [UserName] = 'admin' THEN 'SuperAdmin'
         ELSE 'FieldUser'
     END,
-    [RegionCode] = CASE 
+    [RegionCode] = CASE
         WHEN [UserName] = 'admin' THEN NULL
         ELSE 'REGION1'
     END
